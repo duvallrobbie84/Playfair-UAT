@@ -69,10 +69,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </script>
 <!-- SEO -->
 <meta name="description" content="Playfair is a free match-day app for coaches and managers. Track playing time in real time, plan substitutions and keep every player's game time fair. Works for football, rugby, hockey and more.">
-<meta name="keywords" content="playing time tracker, team sports app, football coach app, substitution planner, fair play time, youth sports, rugby coach, hockey coach">
 <meta name="author" content="Playfair">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://useplayfair.com/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
 
 <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
 <meta property="og:type" content="website">
@@ -87,6 +87,40 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <meta name="twitter:title" content="Playfair — Fair time for every player">
 <meta name="twitter:description" content="Free match-day app for coaches. Track playing time, plan subs and keep every player's game time fair.">
 <meta name="twitter:image" content="https://useplayfair.com/logo.png">
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Playfair",
+  "url": "https://useplayfair.com/",
+  "description": "A free match-day web app for coaches and managers. Track playing time in real time, plan substitutions and keep every player's game time fair. Works for football, rugby, hockey and more.",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "GBP"
+  },
+  "featureList": [
+    "Real-time playing time tracking",
+    "Substitution planner",
+    "Fairness alerts",
+    "Goal logging",
+    "Match export and screenshot",
+    "Works offline"
+  ],
+  "author": {
+    "@type": "Person",
+    "name": "Playfair"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "hello@useplayfair.com",
+    "contactType": "customer support"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -238,6 +272,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="back-bar">
     <a href="app.html">← Back to the app</a>
+  </div>
+
+  <div style="text-align:center;margin-top:24px;padding-bottom:8px;">
+    <a href="https://www.facebook.com/profile.php?id=61589086473255" target="_blank" rel="noopener noreferrer" aria-label="Follow Playfair on Facebook">
+      <img src="facebook-logo.png" alt="Facebook" style="width:32px;height:32px;opacity:0.75;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
+    </a>
   </div>
 
 </div>
