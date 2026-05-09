@@ -1485,19 +1485,36 @@ document.getElementById('ss-coaches').addEventListener('click',()=>{
 
   const logoSrc = document.querySelector('.t-header-icon').src;
 
-  // Clone player list and planner (no buttons/toggles — doCapture handles those)
+  // Clone player list
   const playerListClone = document.getElementById('player-list-card').cloneNode(true);
-  const plannerCard = document.querySelector('#tracker .card:last-of-type');
-  // Find the planner card (contains plan-tbl)
-  const plannerCardEl = document.getElementById('plan-body').closest('.card');
-  const plannerClone = plannerCardEl ? plannerCardEl.cloneNode(true) : null;
 
-  // Remove the "Coach's Notes" button from planner clone — it's a UI button not needed in export
-  if(plannerClone){
-    const notesBtn = plannerClone.querySelector('#notes-open-btn');
-    if(notesBtn) notesBtn.parentElement.style.display='none';
-    const clearBtn = plannerClone.querySelector('#plan-clr');
-    if(clearBtn) clearBtn.closest('.plan-clr').style.display='none';
+  // Build planner HTML directly from planner data (avoids cloneNode selectedIndex bug)
+  function buildPlannerHtml(){
+    const posLabel=v=>v===''?'Bench':v==='SUB'?'Sub':v;
+    const posStyle=v=>{
+      if(!v)return'background:#f5f5f5;color:#aaa;border-color:#e8e8e8;';
+      if(v==='SUB')return'background:#fff8e1;color:#e65100;border-color:#ffb74d;font-weight:700;';
+      if(v==='GK')return'background:#c8e6c9;color:#1b5e20;border-color:#81c784;font-weight:700;';
+      if(v==='D')return'background:#bbdefb;color:#0d47a1;border-color:#64b5f6;font-weight:700;';
+      if(v==='L'||v==='M'||v==='R')return'background:#ede7f6;color:#4a148c;border-color:#9575cd;font-weight:700;';
+      if(v==='F')return'background:#fbe9e7;color:#bf360c;border-color:#ff8a65;font-weight:700;';
+      return'background:#EAF3DE;color:#3B6D11;border-color:#639922;font-weight:600;';
+    };
+    let hdr='<tr><th style="text-align:left;padding:4px 6px;font-size:11px;color:#888;">Player</th>';
+    periodCols.forEach(c=>{hdr+='<th style="padding:4px 2px;font-size:11px;color:#888;text-align:center;">'+c+'</th>';});
+    hdr+='</tr>';
+    let rows='';
+    for(let id=0;id<cfg.squad;id++){
+      const p=players.find(pl=>pl.id===id); if(!p)continue;
+      let row='<tr><td style="padding:4px 6px;font-size:12px;font-weight:500;">'+( (p.name||('#'+(id+1))) )+'</td>';
+      periodCols.forEach(col=>{
+        const val=(planner[id]&&planner[id][col])||'';
+        row+='<td style="padding:3px 2px;min-width:60px;"><div style="padding:4px 2px;font-size:11px;text-align:center;border-radius:6px;border:1px solid #ddd;'+posStyle(val)+'">'+posLabel(val)+'</div></td>';
+      });
+      row+='</tr>';
+      rows+=row;
+    }
+    return '<div style="background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:8px;"><div style="font-size:13px;font-weight:600;color:#333;margin-bottom:8px;">📋 Match Planner</div><table style="width:100%;border-collapse:collapse;"><thead>'+hdr+'</thead><tbody>'+rows+'</tbody></table></div>';
   }
 
   // Load coach's notes
@@ -1532,11 +1549,8 @@ document.getElementById('ss-coaches').addEventListener('click',()=>{
   if(plInner) plDiv.appendChild(plInner.cloneNode(true));
   wrap.appendChild(plDiv);
 
-  // Append planner
-  if(plannerClone){
-    plannerClone.style.marginBottom='8px';
-    wrap.appendChild(plannerClone);
-  }
+  // Append planner (built directly from data, not cloned DOM)
+  wrap.insertAdjacentHTML('beforeend', buildPlannerHtml());
 
   // Append notes
   if(notesHtml) wrap.insertAdjacentHTML('beforeend', notesHtml);
