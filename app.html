@@ -1382,7 +1382,7 @@ function doCapture(element, filenameSuffix){
   const replacements=[];
   selects.forEach(sel=>{
     const div=document.createElement('div');
-    div.textContent=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:'Bench';
+    const selVal=sel.value; const matchedOpt=Array.from(sel.options).find(o=>o.value===selVal); div.textContent=matchedOpt?matchedOpt.text:'Bench';
     div.className=sel.className;
     div.style.cssText='padding:4px 2px;font-size:11px;font-weight:'+getComputedStyle(sel).fontWeight+';text-align:center;border-radius:6px;border:1px solid #ddd;';
     sel.parentNode.insertBefore(div,sel);
