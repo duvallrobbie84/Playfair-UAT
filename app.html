@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
 <title>Playfair</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -213,7 +214,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .adj-time-input.changed { border-color: #2563a8; background: #e8f4ff; color: #2563a8; }
 .adj-time-hint { font-size: 10px; color: #bbb; text-align: center; margin-top: 2px; }
 .exp-pre  { background: #f5f5f5; border-radius: 8px; padding: 12px; font-size: 11px; line-height: 1.8; color: #333; white-space: pre-wrap; font-family: monospace; max-height: 300px; overflow-y: auto; border: 0.5px solid #e0e0e0; }
-.exp-acts { display: flex; gap: 8px; margin-top: 12px; }
+/* ── COACH'S NOTES ── */
+.notes-intro { background: #EAF3DE; border: 1px solid #639922; border-radius: 10px; padding: 10px 13px; font-size: 12px; color: #3B6D11; line-height: 1.6; margin-bottom: 16px; }
+.notes-intro strong { color: #2d6e00; }
+.notes-section-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; color: #888; margin-bottom: 6px; display: block; }
+.notes-textarea { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 9px; padding: 10px 12px; font-size: 13px; font-family: inherit; color: #111; background: #fafafa; resize: vertical; min-height: 90px; line-height: 1.6; outline: none; box-sizing: border-box; }
+.notes-textarea:focus { border-color: #2563a8; background: #f0f5ff; }
+.notes-clear-btn { display: flex; align-items: center; gap: 6px; margin: 0 auto; padding: 8px 20px; font-size: 12px; border: 1px solid #ddd; border-radius: 8px; background: #f5f5f5; color: #aaa; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.notes-clear-btn:hover { background: #FCEBEB; border-color: #A32D2D; color: #A32D2D; }
+.screenshot-opt-btn { width:100%; padding:14px 12px; font-size:14px; font-weight:600; border:1.5px solid #2563a8; border-radius:10px; background:#E6F1FB; color:#2563a8; cursor:pointer; font-family:inherit; text-align:left; }
+.screenshot-opt-btn:hover { background:#B5D4F4; }
+
 .exp-acts button { padding: 9px 12px; font-size: 13px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 500; border: 1px solid #ccc; background: #fff; color: #333; flex: 1; }
 .exp-copy  { background: #2563a8 !important; color: #fff !important; border-color: #2563a8 !important; }
 .exp-email { background: #EAF3DE !important; color: #3B6D11 !important; border-color: #639922 !important; }
@@ -388,7 +399,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <div class="card">
-      <div class="section-title">📋 Match Planner</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="section-title" style="margin-bottom:0">📋 Match Planner</div>
+        <button class="btn-blue" id="notes-open-btn" style="padding:7px 14px;font-size:12px;">📝 Coach's Notes</button>
+      </div>
       <div class="planner-sub">Plan rotations by period. Leave blank = bench.</div>
       <div style="overflow-x:auto">
         <table class="plan-tbl"><thead id="plan-head"></thead><tbody id="plan-body"></tbody><tfoot id="plan-foot"></tfoot></table>
@@ -485,7 +499,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
     <div class="settings-divider"></div>
     <div class="settings-section">
-      <span class="setup-lbl">Player names</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span class="setup-lbl" style="margin-bottom:0">Player names</span>
+        <button id="clear-names-btn" style="padding:4px 12px;font-size:11px;border:1px solid #ddd;border-radius:6px;background:#f5f5f5;color:#aaa;cursor:pointer;font-family:inherit;">Clear names</button>
+      </div>
       <div class="player-names-grid" id="m-player-names"></div>
     </div>
     <div class="mbtns"><button class="ok-blue" id="settings-close">Done</button></div>
@@ -531,6 +548,41 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="overlay" id="prematch-ov">
   <div class="modal-sm"><h3>Match not started</h3><p>Player swaps are disabled until the match is running. To change the starting line-up, go to Settings.</p>
     <div class="mbtns"><button id="prematch-ok">OK</button><button class="ok-blue" id="prematch-settings">⚙ Settings</button></div>
+  </div>
+</div>
+
+<!-- Coach's Notes -->
+<div class="overlay" id="notes-ov">
+  <div class="modal">
+    <h3>📝 Coach's Notes</h3>
+    <div class="notes-intro">
+      <strong>Team talks win games.</strong> Use this space to capture your thoughts before and during the match — tactical adjustments, motivational cues, or anything you want to say at half-time. Great coaches plan their words, not just their formations.
+    </div>
+    <div style="margin-bottom:16px;">
+      <span class="notes-section-lbl">Pre-match</span>
+      <textarea class="notes-textarea" id="notes-prematch" placeholder="Team talk, starting instructions, key focus areas…"></textarea>
+    </div>
+    <div style="margin-bottom:20px;">
+      <span class="notes-section-lbl">Match day notes</span>
+      <textarea class="notes-textarea" id="notes-matchday" placeholder="Half-time thoughts, tactical tweaks, observations during the game…"></textarea>
+    </div>
+    <div style="text-align:center;margin-bottom:12px;">
+      <button class="notes-clear-btn" id="notes-clear-btn">🗑 Clear all notes</button>
+    </div>
+    <div class="mbtns"><button class="ok-blue" id="notes-close">Done</button></div>
+  </div>
+</div>
+
+<!-- Screenshot choice modal -->
+<div class="overlay" id="screenshot-ov">
+  <div class="modal-sm">
+    <h3>📷 Screenshot</h3>
+    <p>Choose what to capture:</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;">
+      <button class="screenshot-opt-btn" id="ss-scoresheet">⚽ Scoresheet only</button>
+      <button class="screenshot-opt-btn" id="ss-coaches">📋 Coach's view</button>
+    </div>
+    <div class="mbtns"><button id="screenshot-cancel">Cancel</button></div>
   </div>
 </div>
 
@@ -674,6 +726,8 @@ function savePlayers(){
   cfg.savedPlayers=byId.map(p=>({
     id:p.id, name:p.name, onPitch:p.onPitch, goals:p.goals, seconds:p.seconds,
   }));
+  // Persist match state so it survives tab kills / browser restarts
+  cfg.savedMatch={gFor:gFor,gAg:gAg,gLog:gLog.slice(),matchSecs:matchSecs,matchComplete:matchComplete,currentPeriod:currentPeriod,periodJustEnded:periodJustEnded};
   saveConfig();
 }
 function loadConfig(){try{const s=localStorage.getItem(STORAGE_KEY);if(s){Object.assign(cfg,JSON.parse(s));return true;}}catch(e){}return false;}
@@ -772,6 +826,16 @@ function syncNameInputs(idx,val,fromModal){
 }
 
 // ── SETTINGS MODAL ───────────────────────────────────────────
+document.getElementById('clear-names-btn').addEventListener('click', () => {
+  if (!confirm('Are you sure you want to clear all player names?')) return;
+  cfg.playerNames = [];
+  players.forEach(p => { p.name = ''; });
+  saveConfig();
+  buildPlayerNameInputsWithPos('m-player-names', true);
+  buildPlayerNameInputs('setup-player-names', false);
+  render(); renderPlan(); updateScore();
+});
+
 document.getElementById('settings-btn').addEventListener('click',()=>{buildSettingsModal();open('settings-modal');});
 document.getElementById('settings-close').addEventListener('click',()=>{
   close('settings-modal'); saveConfig();
@@ -898,11 +962,21 @@ function initTracker(){
     periodCols.forEach(c=>{if(!(c in planner[i]))planner[i][c]='';});
   }
   clearInterval(masterTimer); masterTimer=null; masterStartTime=null;
-  matchSecs=0; playing=false; matchSecsAtStart=0;
-  gFor=0; gAg=0; gLog=[];
+  playing=false; matchSecsAtStart=0;
+  // Restore match state if available (survives tab kill / browser restart)
+  const sm=cfg.savedMatch;
+  if(sm && (sm.matchSecs>0 || sm.gFor>0 || sm.gAg>0 || (sm.gLog&&sm.gLog.length))){
+    gFor=sm.gFor||0; gAg=sm.gAg||0; gLog=sm.gLog||[];
+    matchSecs=sm.matchSecs||0;
+    matchComplete=sm.matchComplete||false;
+    currentPeriod=sm.currentPeriod||1;
+    periodJustEnded=sm.periodJustEnded||false;
+  } else {
+    matchSecs=0; gFor=0; gAg=0; gLog=[];
+  }
   document.getElementById('setup').style.display='none';
   document.getElementById('tracker').style.display='block';
-  document.getElementById('clock').textContent='00:00';
+  document.getElementById('clock').textContent=fmt(matchSecs);
   updateMatchInfo(); updatePeriodIndicator(); updatePlayBtn(); updateScore(); buildPlanHead(); render(); renderPlan();
 }
 
@@ -977,7 +1051,7 @@ function buildScorer(){
   players.forEach(p=>{const b=document.createElement('button');b.className='sc-btn';b.textContent=pname(p);b.addEventListener('click',()=>{recordGoal(p.id);close('scorer-ov');});g.appendChild(b);});
   const u=document.createElement('button');u.className='sc-btn unk';u.textContent='Unknown';u.addEventListener('click',()=>{recordGoal(null);close('scorer-ov');});g.appendChild(u);
 }
-function recordGoal(pid){const p=periodJustEnded?currentPeriod-1:currentPeriod;gFor++;const scorer=pid!==null?players.find(pl=>pl.id===pid):null;if(scorer)scorer.goals++;gLog.push({type:'for',scorer:scorer?pname(scorer):null,sid:pid,min:Math.max(1,Math.floor(matchSecs/60)+1),period:p});updateScore();savePlayers();}
+function recordGoal(pid){const p=periodJustEnded?currentPeriod-1:currentPeriod;gFor++;const scorer=pid!==null?players.find(pl=>pl.id===pid):null;if(scorer)scorer.goals++;gLog.push({type:'for',scorer:scorer?pname(scorer):null,sid:pid,min:Math.max(1,Math.floor(matchSecs/60)+1),period:p});updateScore();savePlayers();render();}
 function updateScore(){
   const us=cfg.home||'Us'; const oppo=cfg.away||'Oppo';
   document.getElementById('mit-score-line').textContent=us+' '+gFor+' – '+gAg+' '+oppo;
@@ -1267,7 +1341,7 @@ document.getElementById('reset-ok').addEventListener('click',()=>{
   clearInterval(masterTimer); masterTimer=null; masterStartTime=null;
   matchSecs=0; playing=false; gFor=0; gAg=0; gLog=[];
   currentPeriod=1; matchComplete=false; periodJustEnded=false;
-  cfg.savedPlayers=[];
+  cfg.savedPlayers=[]; cfg.savedMatch=null;
   // Rebuild players array from scratch, keeping names only
   players=Array.from({length:cfg.squad},(_,i)=>({
     id:i, name:cfg.playerNames[i]||'',
@@ -1285,7 +1359,7 @@ document.getElementById('reset-ok').addEventListener('click',()=>{
     if(!planner[i])planner[i]={};
     periodCols.forEach(c=>{if(!(c in planner[i]))planner[i][c]='';});
   }
-  clearSel(); close('reset-ov'); updatePlayBtn(); updateScore(); updatePeriodIndicator(); updateMatchInfo();
+  clearSel(); close('reset-ov'); clearNotes(); updatePlayBtn(); updateScore(); updatePeriodIndicator(); updateMatchInfo();
   document.getElementById('clock').textContent='00:00';
   document.getElementById('clock-state').textContent='Stopped';
   document.getElementById('clock-state').className='sticky-clock-state pause';
@@ -1295,11 +1369,16 @@ document.getElementById('reset-ok').addEventListener('click',()=>{
 
 // ── SCREENSHOT ───────────────────────────────────────────────
 document.getElementById('screenshot-btn').addEventListener('click',()=>{
-  const btn=document.getElementById('screenshot-btn');
-  btn.textContent='⏳ Capturing…'; btn.disabled=true;
+  open('screenshot-ov');
+});
+document.getElementById('screenshot-cancel').addEventListener('click',()=>{
+  close('screenshot-ov');
+});
 
+// ── Shared capture helper ─────────────────────────────────────
+function doCapture(element, filenameSuffix){
   // Replace <select> elements in the planner with styled <div>s for capture
-  const selects=document.querySelectorAll('#plan-body select');
+  const selects=element.querySelectorAll('select');
   const replacements=[];
   selects.forEach(sel=>{
     const div=document.createElement('div');
@@ -1310,36 +1389,221 @@ document.getElementById('screenshot-btn').addEventListener('click',()=>{
     sel.style.display='none';
     replacements.push({sel,div});
   });
-
   // Hide toggles for capture
-  const toggles=document.querySelectorAll('.pl-toggle');
+  const toggles=element.querySelectorAll('.pl-toggle');
   toggles.forEach(t=>t.style.display='none');
 
-  html2canvas(document.getElementById('tracker'),{
-    scale:2,
-    useCORS:true,
-    backgroundColor:'#f2f2f7',
+  return html2canvas(element,{
+    scale:2, useCORS:true, backgroundColor:'#f2f2f7',
     scrollX:0, scrollY:0,
-    windowWidth:document.getElementById('tracker').scrollWidth,
-    height:document.getElementById('tracker').scrollHeight,
+    windowWidth:element.scrollWidth,
+    height:element.scrollHeight,
   }).then(canvas=>{
     replacements.forEach(({sel,div})=>{sel.style.display='';div.remove();});
     toggles.forEach(t=>t.style.display='');
     const a=document.createElement('a');
     const us=cfg.home||'Us'; const oppo=cfg.away||'Oppo';
     const dateStr=cfg.date?cfg.date:new Date().toISOString().slice(0,10);
-    a.download=(dateStr+'-playfair-'+us+'-vs-'+oppo).replace(/\s+/g,'-').toLowerCase()+'.png';
+    a.download=(dateStr+'-playfair-'+us+'-vs-'+oppo+'-'+filenameSuffix).replace(/\s+/g,'-').toLowerCase()+'.png';
     a.href=canvas.toDataURL('image/png');
     a.click();
-    btn.textContent='📷 Screenshot'; btn.disabled=false;
   }).catch(()=>{
     replacements.forEach(({sel,div})=>{sel.style.display='';div.remove();});
     toggles.forEach(t=>t.style.display='');
-    btn.textContent='📷 Screenshot'; btn.disabled=false;
   });
+}
+
+// ── Shared: build the scoresheet header + score card HTML ─────
+function buildScoresheetHtml(logoSrc){
+  const us = cfg.home || 'Us';
+  const oppo = cfg.away || 'Oppo';
+  const dateStr = cfg.date ? fmtDate(cfg.date) : '';
+  const location = cfg.location || '';
+
+  const oppoShort = cfg.awayShort || cfg.away || 'Oppo';
+  const colLabels = getPeriodCols();
+  const numPeriods = cfg.periodCount || 1;
+
+  let goalsHtml = '';
+  if(gLog.length===0){
+    goalsHtml='<div style="color:#ccc;font-size:13px;">No goals scored</div>';
+  } else {
+    // Group by period, same logic as the app
+    const byPeriod = {};
+    gLog.forEach(g=>{ const p=g.period||1; if(!byPeriod[p])byPeriod[p]=[]; byPeriod[p].push(g); });
+    Object.keys(byPeriod).sort((a,b)=>a-b).forEach(p=>{
+      const goals = byPeriod[p];
+      const forG = goals.filter(g=>g.type==='for');
+      const agG  = goals.filter(g=>g.type==='ag');
+      const score = forG.length+'-'+agG.length;
+      const lbl = numPeriods>1 ? (colLabels[p-1]||('P'+p))+' '+score+': ' : '';
+      const parts = goals.map(g=>{
+        const min = g.min ? ` (${g.min}')` : '';
+        if(g.type==='for') return `<span style="color:#3B6D11;font-weight:600;">${g.scorer||'Unknown'}${min}</span>`;
+        else               return `<span style="color:#A32D2D;font-weight:600;">${oppoShort}${min}</span>`;
+      });
+      goalsHtml += `<div style="padding:4px 0;border-bottom:0.5px solid #f0f0f0;font-size:12px;line-height:1.6;">${lbl?`<span style="color:#bbb;">${lbl}</span>`:''}${parts.join('<span style="color:#bbb;">, </span>')}</div>`;
+    });
+  }
+
+  return `
+    <div style="background:#1e7d34;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:12px;">
+      <img src="${logoSrc}" style="height:44px;width:44px;border-radius:8px;object-fit:cover;flex-shrink:0;">
+      <div style="text-align:center;">
+        <div style="font-size:22px;font-weight:800;color:#fff;">Playfair</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.75);font-style:italic;">Fair time for every player</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:8px;">
+      <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;">${us} vs ${oppo}</div>
+      ${dateStr||location ? `<div style="font-size:12px;color:#888;margin-bottom:12px;">${dateStr}${dateStr&&location?' · ':''}${location}</div>` : '<div style="margin-bottom:12px;"></div>'}
+      <div style="display:flex;align-items:center;justify-content:center;gap:24px;background:#f9f9f9;border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="text-align:center;"><div style="font-size:42px;font-weight:800;color:#3B6D11;">${gFor}</div><div style="font-size:12px;color:#888;margin-top:2px;">${us}</div></div>
+        <div style="font-size:28px;font-weight:700;color:#ccc;">–</div>
+        <div style="text-align:center;"><div style="font-size:42px;font-weight:800;color:#A32D2D;">${gAg}</div><div style="font-size:12px;color:#888;margin-top:2px;">${oppo}</div></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">⚽ Goalscorers</div>
+      ${goalsHtml}
+    </div>`;
+}
+
+// ── Option 1: Scoresheet only ─────────────────────────────────
+document.getElementById('ss-scoresheet').addEventListener('click',()=>{
+  close('screenshot-ov');
+  const logoSrc = document.querySelector('.t-header-icon').src;
+  const wrap = document.createElement('div');
+  wrap.style.cssText='position:fixed;left:-9999px;top:0;width:380px;background:#f2f2f7;padding:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+  wrap.innerHTML = buildScoresheetHtml(logoSrc) +
+    `<div style="text-align:center;padding:8px 0 4px;font-size:11px;color:#aaa;">Powered by useplayfair.com</div>`;
+  document.body.appendChild(wrap);
+  doCapture(wrap,'scoresheet').then(()=>{ document.body.removeChild(wrap); });
+});
+
+// ── Option 2: Coach's view ────────────────────────────────────
+document.getElementById('ss-coaches').addEventListener('click',()=>{
+  close('screenshot-ov');
+
+  const logoSrc = document.querySelector('.t-header-icon').src;
+
+  // Clone player list and planner (no buttons/toggles — doCapture handles those)
+  const playerListClone = document.getElementById('player-list-card').cloneNode(true);
+  const plannerCard = document.querySelector('#tracker .card:last-of-type');
+  // Find the planner card (contains plan-tbl)
+  const plannerCardEl = document.getElementById('plan-body').closest('.card');
+  const plannerClone = plannerCardEl ? plannerCardEl.cloneNode(true) : null;
+
+  // Remove the "Coach's Notes" button from planner clone — it's a UI button not needed in export
+  if(plannerClone){
+    const notesBtn = plannerClone.querySelector('#notes-open-btn');
+    if(notesBtn) notesBtn.parentElement.style.display='none';
+    const clearBtn = plannerClone.querySelector('#plan-clr');
+    if(clearBtn) clearBtn.closest('.plan-clr').style.display='none';
+  }
+
+  // Load coach's notes
+  const notes = loadNotes();
+  let notesHtml = '';
+  if(notes.prematch || notes.matchday){
+    notesHtml = `<div style="background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:700;color:#333;margin-bottom:10px;">📝 Coach's Notes</div>`;
+    if(notes.prematch){
+      notesHtml += `<div style="font-size:10px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#888;margin-bottom:4px;">Pre-match</div>
+        <div style="font-size:13px;color:#111;white-space:pre-wrap;margin-bottom:12px;">${notes.prematch.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+    }
+    if(notes.matchday){
+      notesHtml += `<div style="font-size:10px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#888;margin-bottom:4px;">Match day notes</div>
+        <div style="font-size:13px;color:#111;white-space:pre-wrap;">${notes.matchday.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+    }
+    notesHtml += `</div>`;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText='position:fixed;left:-9999px;top:0;width:420px;background:#f2f2f7;padding:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+  wrap.innerHTML = buildScoresheetHtml(logoSrc);
+
+  // Append player list
+  const plDiv = document.createElement('div');
+  plDiv.style.cssText='background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:8px;';
+  const plTitle = document.createElement('div');
+  plTitle.style.cssText='font-size:13px;font-weight:600;color:#333;margin-bottom:10px;';
+  plTitle.textContent='Players';
+  plDiv.appendChild(plTitle);
+  const plInner = playerListClone.querySelector('#player-list');
+  if(plInner) plDiv.appendChild(plInner.cloneNode(true));
+  wrap.appendChild(plDiv);
+
+  // Append planner
+  if(plannerClone){
+    plannerClone.style.marginBottom='8px';
+    wrap.appendChild(plannerClone);
+  }
+
+  // Append notes
+  if(notesHtml) wrap.insertAdjacentHTML('beforeend', notesHtml);
+
+  wrap.insertAdjacentHTML('beforeend',
+    `<div style="text-align:center;padding:8px 0 4px;font-size:11px;color:#aaa;">Powered by useplayfair.com</div>`);
+
+  document.body.appendChild(wrap);
+  doCapture(wrap,'coaches-view').then(()=>{ document.body.removeChild(wrap); });
 });
 
 window.addEventListener('beforeunload',e=>{if(players.some(p=>p.seconds>0)||gFor>0||gAg>0){e.preventDefault();e.returnValue='';}});
+
+// ── COACH'S NOTES ─────────────────────────────────────────────
+const NOTES_KEY = 'playfair_coach_notes';
+
+function loadNotes() {
+  try {
+    const raw = localStorage.getItem(NOTES_KEY);
+    return raw ? JSON.parse(raw) : { prematch: '', matchday: '' };
+  } catch(e) { return { prematch: '', matchday: '' }; }
+}
+
+function saveNotes(notes) {
+  try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch(e) {}
+}
+
+function clearNotes() {
+  saveNotes({ prematch: '', matchday: '' });
+  const pm = document.getElementById('notes-prematch');
+  const md = document.getElementById('notes-matchday');
+  if(pm) pm.value = '';
+  if(md) md.value = '';
+}
+
+document.getElementById('notes-open-btn').addEventListener('click', () => {
+  const notes = loadNotes();
+  document.getElementById('notes-prematch').value = notes.prematch || '';
+  document.getElementById('notes-matchday').value = notes.matchday || '';
+  open('notes-ov');
+});
+
+document.getElementById('notes-close').addEventListener('click', () => {
+  const notes = {
+    prematch: document.getElementById('notes-prematch').value,
+    matchday: document.getElementById('notes-matchday').value,
+  };
+  saveNotes(notes);
+  close('notes-ov');
+});
+
+document.getElementById('notes-clear-btn').addEventListener('click', () => {
+  if(confirm('Clear all coach\'s notes? This cannot be undone.')) {
+    clearNotes();
+  }
+});
+
+// Auto-save notes as user types
+['notes-prematch', 'notes-matchday'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', () => {
+    saveNotes({
+      prematch: document.getElementById('notes-prematch').value,
+      matchday: document.getElementById('notes-matchday').value,
+    });
+  });
+});
 
 // ── BOOT ─────────────────────────────────────────────────────
 if(loadConfig()&&cfg.squad>=cfg.team){if(!cfg.formCounts)cfg.formCounts={gk:1,def:2,mid:2,att:0};initTracker();}
