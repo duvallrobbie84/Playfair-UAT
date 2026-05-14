@@ -151,7 +151,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       "name": "Do I have to start from scratch every time?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No — Playfair saves your squad names and settings directly on your device, so they'll be there the next time you open it. What does reset between matches is the match clock, scores, and goals, so you're always starting a fresh game on clean data. Your team setup stays put."
+        "text": "No — Playfair saves your squad names and settings directly on your device, so they'll be there the next time you open it."
       }
     },
     {
@@ -237,6 +237,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="card">
     <div class="card-label">User Guide</div>
+    <h2 class="guide-toggle" onclick="toggleVideo()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+      See it in action — video
+      <span id="video-chevron" style="font-size:14px;color:var(--green-dark);font-family:'DM Sans',sans-serif;font-weight:600;margin-left:12px;transition:transform 0.2s;">▼ Show</span>
+    </h2>
+    <div id="video-content" style="display:none;padding-top:8px;">
+      <p style="margin:0 0 12px;">Watch a walkthrough of Playfair on YouTube — see how to set up your squad, track playing time live, and export your match summary.</p>
+      <a href="https://www.youtube.com/@UsePlayFair" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;font-weight:700;font-size:15px;padding:11px 20px;border-radius:10px;text-decoration:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="red" points="9.75,15.02 15.5,12 9.75,8.98"/><polygon fill="white" points="9.75,15.02 15.5,12 9.75,8.98"/></svg>
+        Watch on YouTube
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">User Guide</div>
     <h2 class="guide-toggle" onclick="toggleGuide()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
       Getting started
       <span id="guide-chevron" style="font-size:14px;color:var(--green-dark);font-family:'DM Sans',sans-serif;font-weight:600;margin-left:12px;transition:transform 0.2s;">▼ Show</span>
@@ -298,9 +313,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="card-label">User Guide</div>
     <h2 class="faq-toggle" onclick="toggleFaq()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
       FAQ
-      <span id="faq-chevron" style="font-size:14px;color:var(--green-dark);font-family:'DM Sans',sans-serif;font-weight:600;margin-left:12px;transition:transform 0.2s;">▲ Hide</span>
+      <span id="faq-chevron" style="font-size:14px;color:var(--green-dark);font-family:'DM Sans',sans-serif;font-weight:600;margin-left:12px;transition:transform 0.2s;">▼ Show</span>
     </h2>
-    <div id="faq-items" style="display:block;">
+    <div id="faq-items" style="display:none;">
       <div style="padding:12px 0;border-bottom:0.5px solid #f0f0f0;">
         <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Why is Playfair free?</div>
         <div style="font-size:13px;color:var(--muted);line-height:1.6;">Because I feel passionately about ensuring fairness in grassroot sport. Every child and player deserves equal opportunity on the pitch, and cost shouldn't be a barrier to making that happen.</div>
@@ -311,7 +326,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div style="padding:12px 0;border-bottom:0.5px solid #f0f0f0;">
         <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Do I have to start from scratch every time?</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.6;">No — Playfair saves your squad names and settings directly on your device, so they'll be there the next time you open it. What does reset between matches is the match clock, scores, and goals, so you're always starting a fresh game on clean data. Your team setup stays put.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;">No — Playfair saves your squad names and settings directly on your device, so they'll be there the next time you open it.</div>
       </div>
       <div style="padding:12px 0;border-bottom:0.5px solid #f0f0f0;">
         <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Does it work without an internet connection?</div>
@@ -366,14 +381,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <a href="app.html">← Back to the app</a>
   </div>
 
-  <div style="text-align:center;margin-top:24px;padding-bottom:8px;">
+  <div style="text-align:center;margin-top:24px;padding-bottom:8px;display:flex;justify-content:center;align-items:center;gap:16px;">
     <a href="https://www.facebook.com/profile.php?id=61589086473255" target="_blank" rel="noopener noreferrer" aria-label="Follow Playfair on Facebook">
       <img src="facebook-logo.png" alt="Facebook" style="width:32px;height:32px;opacity:0.75;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
+    </a>
+    <a href="https://www.youtube.com/@UsePlayFair" target="_blank" rel="noopener noreferrer" aria-label="Watch Playfair on YouTube">
+      <img src="youtube-logo.jpg" alt="YouTube" style="width:32px;height:32px;opacity:0.75;transition:opacity 0.15s;border-radius:6px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
     </a>
   </div>
 
 </div>
 <script>
+function toggleVideo(){
+  const content=document.getElementById('video-content');
+  const chevron=document.getElementById('video-chevron');
+  const open=content.style.display==='none';
+  content.style.display=open?'block':'none';
+  chevron.textContent=open?'▲ Hide':'▼ Show';
+}
 function toggleFaq(){
   const items=document.getElementById('faq-items');
   const chevron=document.getElementById('faq-chevron');

@@ -132,8 +132,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pl-name.off { color: #bbb; }
 .pl-bar-track { width: 100%; height: 4px; background: #eee; border-radius: 2px; overflow: hidden; }
 .pl-bar-fill { height: 100%; border-radius: 2px; background: #2563a8; transition: width 0.5s; }
-.pl-timer { font-size: 13px; font-weight: 500; color: #555; letter-spacing: 0.5px; min-width: 42px; text-align: right; flex-shrink: 0; }
+.pl-timer { font-size: 13px; font-weight: 500; color: #555; letter-spacing: 0.5px; min-width: 64px; text-align: right; flex-shrink: 0; }
 .pl-timer.running { color: #2e7d32; font-weight: 700; }
+.pl-col-header { display: flex; align-items: center; gap: 10px; padding: 0 0 4px; margin-bottom: 2px; border-bottom: 1px solid #e8e8e8; }
+.pl-col-header-spacer { width: 44px; flex-shrink: 0; }
+.pl-col-header-name { flex: 1; font-size: 11px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.4px; }
+.pl-col-header-time { min-width: 64px; font-size: 11px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.4px; text-align: right; flex-shrink: 0; }
 .pl-behind-banner { font-size: 12px; font-weight: 600; color: #854F0B; background: #fef3d8; border: 1px solid #e6a817; border-radius: 7px; padding: 6px 10px; margin-bottom: 6px; text-align: center; display: none; }
 .pl-behind-banner.on { display: block; }
 /* Toggle switch — back to original size */
@@ -141,7 +145,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pl-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
 .pl-toggle-slider { position: absolute; inset: 0; border-radius: 13px; background: #ddd; cursor: pointer; transition: background 0.2s; }
 .pl-toggle-slider:before { content: ''; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-.pl-toggle input:checked + .pl-toggle-slider { background: #2d9e4f; }
+.pl-toggle input:checked + .pl-toggle-slider { background: #2563a8; }
 .pl-toggle input:checked + .pl-toggle-slider:before { transform: translateX(18px); }
 
 /* ── PLANNER ── */
@@ -394,6 +398,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <div class="card" id="player-list-card">
       <div class="pl-header">
         <div class="section-title" style="margin-bottom:0">Players</div>
+      </div>
+      <div class="pl-col-header" id="pl-col-header" style="display:none">
+        <div class="pl-col-header-spacer"></div>
+        <div class="pl-col-header-name">Player</div>
+        <div class="pl-col-header-time">Mins / Share&nbsp;%</div>
       </div>
       <div id="player-list"></div>
     </div>
@@ -654,7 +663,15 @@ function tickFromTimestamp(){
   players.forEach(p=>{
     if(p.running){
       p.seconds=p._secsAtStart+elapsed;
-      const e=document.getElementById('pt-'+p.id); if(e)e.textContent=fmtPlayer(p.seconds);
+      const e=document.getElementById('pt-'+p.id);
+      if(e){
+        if(matchSecs>0){
+          const pct=Math.min(100,Math.round(p.seconds/matchSecs*100));
+          e.textContent=fmtPlayer(p.seconds)+' / '+pct+'%';
+        } else {
+          e.textContent=fmtPlayer(p.seconds);
+        }
+      }
     }
   });
 
@@ -1044,7 +1061,7 @@ document.getElementById('undo-btn').addEventListener('click',()=>{
   if(!gLog.length)return; const l=gLog.pop();
   if(l.type==='for'){gFor=Math.max(0,gFor-1);if(l.sid!==null)players[l.sid].goals=Math.max(0,players[l.sid].goals-1);}
   else gAg=Math.max(0,gAg-1);
-  updateScore();
+  updateScore();savePlayers();render();
 });
 function buildScorer(){
   const g=document.getElementById('scorer-grid'); g.innerHTML='';
@@ -1113,6 +1130,9 @@ function renderPlayerList(){
   } else {
     banner.classList.remove('on');
   }
+  // Column header — only show once match has started
+  const colHdr=document.getElementById('pl-col-header');
+  if(colHdr) colHdr.style.display=totalSecs>0?'flex':'none';
   [...players].sort((a,b)=>a.id-b.id).forEach(p=>{
     const row=document.createElement('div'); row.className='pl-row';
     // Toggle
@@ -1126,16 +1146,36 @@ function renderPlayerList(){
     const nm=document.createElement('div'); nm.className='pl-name'+(p.onPitch?'':' off');
     nm.textContent=pname(p)+(p.goals>0?' ('+p.goals+')':'');
     block.appendChild(nm);
-    // Progress bar — % of total match time
+    // Progress bar — % of elapsed match time
     const track=document.createElement('div'); track.className='pl-bar-track';
     const fill=document.createElement('div'); fill.className='pl-bar-fill';
-    const pct=totalSecs>0?Math.min(100,Math.round(p.seconds/totalSecs*100)):0;
+    const shareFrac=totalSecs>0?p.seconds/totalSecs:0; // 0–1, simple % of elapsed time
+    const pct=Math.min(100,Math.round(shareFrac*100));
     fill.style.width=pct+'%';
+    // Colour thresholds for text only
+    let colourClass='';
+    if(totalSecs>0){
+      const fairFrac=cfg.team/cfg.squad;
+      const ratio=shareFrac/fairFrac;
+      if(ratio<0.8) colourClass='red';
+      else if(ratio<0.9) colourClass='amber';
+    }
     track.appendChild(fill); block.appendChild(track);
     row.appendChild(block);
-    // Timer
+    // Timer: "Xm / Y%" — Y% is simple % of elapsed match time
     const tv=document.createElement('div'); tv.className='pl-timer'+(p.running?' running':'');
-    tv.id='pt-'+p.id; tv.textContent=fmtPlayer(p.seconds); row.appendChild(tv);
+    tv.id='pt-'+p.id;
+    if(totalSecs>0){
+      tv.textContent=fmtPlayer(p.seconds)+' / '+pct+'%';
+      if(!p.running){
+        if(colourClass==='red') tv.style.color='#c0392b';
+        else if(colourClass==='amber') tv.style.color='#e6a817';
+        else tv.style.color='#2d9e4f';
+      }
+    } else {
+      tv.textContent=fmtPlayer(p.seconds);
+    }
+    row.appendChild(tv);
     container.appendChild(row);
   });
 }
