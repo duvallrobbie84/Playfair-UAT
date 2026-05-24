@@ -1547,23 +1547,30 @@ function updateScore(){
     const score=forG.length+'-'+agG.length;
     const lbl=numPeriods>1?(colLabels[p-1]||('P'+p))+' '+score:'';
     if(lbl){const hdr=document.createElement('div');hdr.className='g-period-hdr';hdr.textContent=lbl;el.appendChild(hdr);}
-    events.forEach(e=>{
-      const row=document.createElement('div'); row.className='goal-row';
-      if(e.eType==='goal'){
+    // Goals: comma-separated on one row per period
+    const goals=events.filter(e=>e.eType==='goal');
+    if(goals.length){
+      const parts=goals.map(e=>{
         const min=e.min?(' ('+e.min+"')"):'';
         let ast='';
         if(e.assist==='pen') ast=' <span class="g-ast">(pen)</span>';
         else if(e.assist==='sp') ast=' <span class="g-ast">(sp)</span>';
         else if(e.assist) ast=' <span class="g-ast">(ast: '+e.assist+')</span>';
-        if(e.type==='for') row.innerHTML='<span class="g-for">'+(e.scorer||'Unknown')+min+'</span>'+ast;
-        else row.innerHTML='<span class="g-ag">'+(e.scorer||oppoShort)+min+'</span>'+ast;
-      } else {
-        const card=e.card==='y'?'🟨':'🟥';
-        const who=e.playerName||(e.team==='oppo'?oppoShort:'Unknown');
-        const min=e.min?" ("+e.min+"')":'';
-        const cls=e.team==='us'?'g-for':'g-ag';
-        row.innerHTML='<span class="'+cls+'">'+card+' '+who+min+'</span>';
-      }
+        if(e.type==='for') return '<span class="g-for">'+(e.scorer||'Unknown')+min+'</span>'+ast;
+        else return '<span class="g-ag">'+(e.scorer||oppoShort)+min+'</span>'+ast;
+      });
+      const row=document.createElement('div'); row.className='goal-row';
+      row.innerHTML=parts.join('<span class="g-sep">, </span>');
+      el.appendChild(row);
+    }
+    // Bookings: each on its own line
+    events.filter(e=>e.eType==='booking').forEach(e=>{
+      const card=e.card==='y'?'🟨':'🟥';
+      const who=e.playerName||(e.team==='oppo'?oppoShort:'Unknown');
+      const min=e.min?" ("+e.min+"')":'';
+      const cls=e.team==='us'?'g-for':'g-ag';
+      const row=document.createElement('div'); row.className='goal-row';
+      row.innerHTML='<span class="'+cls+'">'+card+' '+who+min+'</span>';
       el.appendChild(row);
     });
   });
