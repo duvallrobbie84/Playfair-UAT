@@ -1555,7 +1555,7 @@ function updateScore(){
         let ast='';
         if(e.assist==='pen') ast=' <span class="g-ast">(pen)</span>';
         else if(e.assist==='sp') ast=' <span class="g-ast">(sp)</span>';
-        else if(e.assist) ast=' <span class="g-ast">(ast: '+e.assist+')</span>';
+        else if(e.assist) ast=' <span class="g-ast">('+e.assist+')</span>';
         if(e.type==='for') return '<span class="g-for">'+(e.scorer||'Unknown')+min+'</span>'+ast;
         else return '<span class="g-ag">'+(e.scorer||oppoShort)+min+'</span>'+ast;
       });
@@ -1913,7 +1913,7 @@ function buildExport(){
           let ast='';
           if(e.assist==='pen') ast=' (pen)';
           else if(e.assist==='sp') ast=' (sp)';
-          else if(e.assist) ast=' (ast: '+e.assist+')';
+          else if(e.assist) ast=' ('+e.assist+')';
           L.push('    ⚽ '+side+': '+who+min+ast);
         } else {
           const card=e.card==='y'?'YC':'RC';
