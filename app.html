@@ -401,6 +401,8 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
 .plan-clr-btn:hover { background: var(--red-pale); border-color: var(--red); color: var(--red); }
 
 /* ── FOOTER ── */
+.btn-bookings-inline { width: 100%; margin-top: 10px; padding: 10px; border-radius: 10px; border: none; background: #fff8e6; color: #b07d00; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.12s; }
+.btn-bookings-inline:hover { background: #e6a817; color: #fff; }
 .footer { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
 .footer button { flex: 1; max-width: 110px; line-height: 1.4; padding-top: 8px; padding-bottom: 8px; }
 .btn-red  { padding: 10px 22px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--red); border-radius: 10px; background: var(--bg); color: var(--red); cursor: pointer; font-family: var(--font); transition: background 0.12s; }
@@ -431,6 +433,21 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
 .sc-btn.sel-goal  { background: var(--green); border-color: var(--green); color: #fff; }
 .sc-btn.sel-assist { background: var(--green-pale); border-color: var(--green); color: var(--green); }
 .g-ast { font-size: 11px; color: var(--text-muted); font-style: italic; }
+.g-section-divider { border-top: 1px solid var(--card-border); margin: 10px 0 6px; }
+.g-section-hdr { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.g-ast-name { font-size: 13px; color: var(--text-muted); font-style: italic; }
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 24px; transition: 0.2s; }
+.toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.2s; }
+input:checked + .toggle-slider { background: var(--green); }
+input:checked + .toggle-slider:before { transform: translateX(20px); }
+.edit-log-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid var(--card-border); font-size: 13px; gap: 8px; }
+.edit-log-row:last-child { border-bottom: none; }
+.edit-log-text { flex: 1; line-height: 1.4; }
+.edit-log-btns { display: flex; gap: 6px; flex-shrink: 0; }
+.edit-log-btns button { background: none; border: 1px solid var(--card-border); border-radius: 6px; padding: 4px 8px; font-size: 13px; cursor: pointer; font-family: var(--font); }
+.edit-log-btns button:hover { background: var(--bg); }
 .g-period-hdr { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 0 2px; }
 
 .settings-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -621,6 +638,7 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
         </div>
         <button class="score-btn ag" id="ag-btn">⚽<br>Concede</button>
       </div>
+      <button class="btn-bookings-inline" id="bookings-inline-btn" style="display:none;">🟨🟥 Bookings</button>
     </div>
     <div class="warnings-bar">
       <div class="pl-behind-banner" id="pl-behind-banner"></div>
@@ -668,7 +686,7 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
 
     <div class="footer">
       <button class="btn-red" id="reset-btn">🔄<br>Reset</button>
-      <button class="btn-yellow" id="booking-btn">🟨🟥<br>Bookings</button>
+      <button class="btn-blue" id="editlog-btn">✏️<br>Edit log</button>
       <button class="btn-blue" id="export-btn">📤<br>Export</button>
       <button class="btn-blue" id="screenshot-btn">📷<br>Screenshot</button>
     </div>
@@ -802,6 +820,19 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
     </div>
     <div class="settings-divider"></div>
     <div class="settings-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="setup-lbl" style="margin-bottom:2px;">Match has bookings</div>
+          <div style="font-size:11px;color:var(--text-muted);">Show bookings button during match</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="m-bookings-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="settings-divider"></div>
+    <div class="settings-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
         <span class="setup-lbl" style="margin-bottom:0">Player names</span>
         <button id="clear-names-btn" style="padding:4px 12px;font-size:11px;border:1px solid #ddd;border-radius:6px;background:#f5f5f5;color:#aaa;cursor:pointer;font-family:inherit;">Clear names</button>
@@ -914,6 +945,38 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
     </div>
     <div class="mbtns"><button id="bk-cancel">Cancel</button><button class="ok-blue" id="bk-ok">Log booking</button></div>
     <div style="margin-top:10px;display:flex;justify-content:center;"><button class="undo-btn" id="bk-undo-btn" disabled>↩ Remove last booking</button></div>
+  </div>
+</div>
+
+<!-- Edit log -->
+<div class="overlay" id="editlog-ov">
+  <div class="modal" style="max-height:80vh;display:flex;flex-direction:column;">
+    <h3>✏️ Edit log</h3>
+    <div id="editlog-list" style="overflow-y:auto;flex:1;margin:10px 0;"></div>
+    <div style="display:flex;gap:8px;margin:8px 0 4px;">
+      <button class="ok-blue" id="add-goal-btn" style="flex:1;">+ Add goal</button>
+      <button class="ok-blue" id="add-booking-btn" style="flex:1;">+ Add booking</button>
+    </div>
+    <div class="mbtns"><button id="editlog-close">Close</button></div>
+  </div>
+</div>
+
+<!-- Edit event -->
+<div class="overlay" id="editevent-ov">
+  <div class="modal-sm" style="max-height:80vh;overflow-y:auto;">
+    <h3 id="editevent-title">Edit event</h3>
+    <div id="editevent-body"></div>
+    <div class="mbtns"><button id="editevent-cancel">Cancel</button><button class="ok-blue" id="editevent-save">Save</button></div>
+  </div>
+</div>
+
+<!-- Second yellow -->
+<div class="overlay" id="second-yellow-ov">
+  <div class="modal-sm">
+    <h3>🟨🟨 Second yellow</h3>
+    <p id="second-yellow-name" style="font-weight:700;font-size:15px;text-align:center;margin:10px 0 4px;"></p>
+    <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:14px;">has received a second yellow. Add a red card?</p>
+    <div class="mbtns"><button id="second-yellow-no">No</button><button class="ok-red" id="second-yellow-yes">Yes, add red</button></div>
   </div>
 </div>
 
@@ -1238,6 +1301,9 @@ function buildSettingsModal(){
   pli.oninput=locked?null:e=>{cfg.periodMins=Math.max(1,parseInt(e.target.value)||10);const pc=getPeriodConfig();periodSecs=pc.secs;saveConfig();};
   const ftsEl=document.getElementById('m-fairness-threshold');
   if(ftsEl){ ftsEl.value=cfg.fairnessThreshold||5; ftsEl.onchange=e=>{cfg.fairnessThreshold=parseInt(e.target.value)||5;saveConfig();updatePlayerList();}; }
+  const bkToggle=document.getElementById('m-bookings-toggle');
+  bkToggle.checked=!!cfg.hasBookings;
+  bkToggle.onchange=()=>{cfg.hasBookings=bkToggle.checked;saveConfig();applyBookingsVisibility();};
   document.getElementById('m-d-home').value=cfg.home||''; document.getElementById('m-d-home').oninput=e=>{cfg.home=e.target.value;saveConfig();updateMatchInfo();};
   document.getElementById('m-d-away').value=cfg.away||''; document.getElementById('m-d-away').oninput=e=>{cfg.away=e.target.value;saveConfig();updateMatchInfo();};
   document.getElementById('m-d-home-short').value=cfg.homeShort||''; document.getElementById('m-d-home-short').oninput=e=>{cfg.homeShort=e.target.value;saveConfig();};
@@ -1451,7 +1517,7 @@ function scrollToAssist(){
   const el=document.getElementById('assist-grid');
   if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
 }
-let _selectedAssist=null; // null=none, 'pen', 'sp', or player id (number)
+let _selectedAssist=null; // null=none, 'pen', 'freekick', or player id (number)
 
 function buildScorer(){
   _selectedScorerId=null;
@@ -1492,7 +1558,7 @@ function buildScorer(){
     ag.appendChild(b);
   });
   // Special buttons: None, Pen, SP
-  [['None','none'],['Pen','pen'],['SP','sp']].forEach(([label,val])=>{
+  [['None','none'],['Pen','pen'],['Free kick','freekick']].forEach(([label,val])=>{
     const b=document.createElement('button'); b.className='sc-btn unk'; b.textContent=label;
     b.addEventListener('click',()=>{
       document.querySelectorAll('#assist-grid .sc-btn').forEach(x=>x.classList.remove('sel-assist'));
@@ -1516,7 +1582,7 @@ function recordGoal(pid, assist){
   // Resolve assist label
   let assistLabel=null;
   if(assist==='pen') assistLabel='pen';
-  else if(assist==='sp') assistLabel='sp';
+  else if(assist==='freekick') assistLabel='freekick';
   else if(assist!==null&&assist!==undefined){
     const ap=players.find(pl=>pl.id===assist);
     if(ap) assistLabel=pname(ap);
@@ -1531,49 +1597,61 @@ function updateScore(){
   document.getElementById('undo-btn').disabled=!gLog.length;
   const el=document.getElementById('goals-log');
   const oppoShort=cfg.awayShort||cfg.away||'Oppo';
-  const allEvents=[];
-  gLog.forEach(g=>allEvents.push({...g,eType:'goal'}));
-  bkLog.forEach(b=>allEvents.push({...b,eType:'booking'}));
-  if(!allEvents.length){el.innerHTML='<div class="g-empty">No goals yet</div>';return;}
+  if(!gLog.length&&!bkLog.length){el.innerHTML='<div class="g-empty">No goals yet</div>';return;}
   el.innerHTML='';
   const numPeriods=cfg.periodCount||1;
   const colLabels=getPeriodCols();
-  const byPeriod={};
-  allEvents.forEach(e=>{const p=e.period||1;if(!byPeriod[p])byPeriod[p]=[];byPeriod[p].push(e);});
-  Object.keys(byPeriod).sort((a,b)=>a-b).forEach(p=>{
-    const events=byPeriod[p].sort((a,b)=>(a.min||0)-(b.min||0));
-    const forG=events.filter(e=>e.eType==='goal'&&e.type==='for');
-    const agG=events.filter(e=>e.eType==='goal'&&e.type==='ag');
-    const score=forG.length+'-'+agG.length;
-    const lbl=numPeriods>1?(colLabels[p-1]||('P'+p))+' '+score:'';
-    if(lbl){const hdr=document.createElement('div');hdr.className='g-period-hdr';hdr.textContent=lbl;el.appendChild(hdr);}
-    // Goals: comma-separated on one row per period
-    const goals=events.filter(e=>e.eType==='goal');
-    if(goals.length){
-      const parts=goals.map(e=>{
-        const min=e.min?(' ('+e.min+"')"):'';
-        let ast='';
-        if(e.assist==='pen') ast=' <span class="g-ast">(pen)</span>';
-        else if(e.assist==='sp') ast=' <span class="g-ast">(sp)</span>';
-        else if(e.assist) ast=' <span class="g-ast">('+e.assist+')</span>';
-        if(e.type==='for') return '<span class="g-for">'+(e.scorer||'Unknown')+min+'</span>'+ast;
-        else return '<span class="g-ag">'+(e.scorer||oppoShort)+min+'</span>'+ast;
+
+  // ── Section 1: Goals by period ──
+  if(gLog.length){
+    const byPeriod={};
+    gLog.forEach(g=>{const p=g.period||1;if(!byPeriod[p])byPeriod[p]=[];byPeriod[p].push(g);});
+    Object.keys(byPeriod).sort((a,b)=>a-b).forEach(p=>{
+      const goals=byPeriod[p].sort((a,b)=>(a.min||0)-(b.min||0));
+      const forG=goals.filter(g=>g.type==='for'); const agG=goals.filter(g=>g.type==='ag');
+      const lbl=numPeriods>1?(colLabels[p-1]||('P'+p))+' '+forG.length+'-'+agG.length:'';
+      if(lbl){const hdr=document.createElement('div');hdr.className='g-period-hdr';hdr.textContent=lbl;el.appendChild(hdr);}
+      const parts=goals.map(g=>{
+        const min=g.min?(' ('+g.min+"')"):'';
+        if(g.type==='for') return '<span class="g-for">'+(g.scorer||'Unknown')+min+'</span>';
+        else return '<span class="g-ag">'+(g.scorer||oppoShort)+min+'</span>';
       });
       const row=document.createElement('div'); row.className='goal-row';
       row.innerHTML=parts.join('<span class="g-sep">, </span>');
       el.appendChild(row);
-    }
-    // Bookings: each on its own line
-    events.filter(e=>e.eType==='booking').forEach(e=>{
-      const card=e.card==='y'?'🟨':'🟥';
-      const who=e.playerName||(e.team==='oppo'?oppoShort:'Unknown');
-      const min=e.min?" ("+e.min+"')":'';
-      const cls=e.team==='us'?'g-for':'g-ag';
-      const row=document.createElement('div'); row.className='goal-row';
-      row.innerHTML='<span class="'+cls+'">'+card+' '+who+min+'</span>';
-      el.appendChild(row);
     });
-  });
+  }
+
+  // ── Section 2: Assists (flat list, muted, hidden if none) ──
+  const assistGoals=gLog.filter(g=>g.assist&&g.assist!=='pen'&&g.assist!=='freekick');
+  if(assistGoals.length){
+    const div=document.createElement('div'); div.className='g-section-divider'; el.appendChild(div);
+    const hdr=document.createElement('div'); hdr.className='g-section-hdr'; hdr.textContent='Assists'; el.appendChild(hdr);
+    const parts=assistGoals.sort((a,b)=>(a.min||0)-(b.min||0)).map(g=>{
+      const min=g.min?(' ('+g.min+"')"):'';
+      const lbl=g.assist==='pen'?'Pen':g.assist==='freekick'?'Free kick':g.assist;
+      return '<span class="g-ast-name">'+lbl+min+'</span>';
+    });
+    const row=document.createElement('div'); row.className='goal-row';
+    row.innerHTML=parts.join('<span class="g-sep">, </span>');
+    el.appendChild(row);
+  }
+
+  // ── Section 3: Bookings (flat list, hidden if none) ──
+  if(bkLog.length){
+    const div=document.createElement('div'); div.className='g-section-divider'; el.appendChild(div);
+    const hdr=document.createElement('div'); hdr.className='g-section-hdr'; hdr.textContent='Bookings'; el.appendChild(hdr);
+    const parts=bkLog.sort((a,b)=>(a.min||0)-(b.min||0)).map(b=>{
+      const card=b.card==='y'?'🟨':'🟥';
+      const who=b.playerName||(b.team==='oppo'?oppoShort:'Unknown');
+      const min=b.min?" ("+b.min+"')":'';
+      const cls=b.team==='us'?'g-for':'g-ag';
+      return '<span class="'+cls+'">'+card+' '+who+min+'</span>';
+    });
+    const row=document.createElement('div'); row.className='goal-row';
+    row.innerHTML=parts.join('<span class="g-sep">, </span>');
+    el.appendChild(row);
+  }
 }
 
 // ── PLAYER LIST ──────────────────────────────────────────────
@@ -1677,7 +1755,7 @@ function togglePlayer(id,on){
   }
   savePlayers(); renderPlayerList();
 }
-function render(){ renderPlayerList(); }
+function render(){ renderPlayerList(); applyBookingsVisibility(); }
 function clearSel(){}
 
 // ── PLANNER ──────────────────────────────────────────────────
@@ -1819,8 +1897,9 @@ document.getElementById('adj-save').addEventListener('click',()=>{
 let _bkTeam=null,_bkCard=null,_bkPlayer=null;
 
 function buildBookingModal(){
-  _bkTeam=null; _bkCard=null; _bkPlayer=null;
-  ['bk-team-us','bk-team-oppo','bk-card-y','bk-card-r'].forEach(id=>document.getElementById(id).classList.remove('sel-goal'));
+  _bkTeam='us'; _bkCard=null; _bkPlayer=null;
+  ['bk-team-oppo','bk-card-y','bk-card-r'].forEach(id=>document.getElementById(id).classList.remove('sel-goal'));
+  document.getElementById('bk-team-us').classList.add('sel-goal');
   const grid=document.getElementById('bk-player-grid'); grid.innerHTML='';
   players.forEach(p=>{
     const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
@@ -1875,14 +1954,469 @@ document.getElementById('bk-ok').addEventListener('click',()=>{
   else if(_bkTeam==='oppo'){playerName=document.getElementById('bk-oppo-name').value.trim()||null;}
   bkLog.push({team:_bkTeam,card:_bkCard,playerName,pid:_bkTeam==='us'?_bkPlayer:null,min,period});
   document.getElementById('bk-undo-btn').disabled=!bkLog.length;
+  // Second yellow check
+  if(_bkTeam==='us'&&_bkCard==='y'&&_bkPlayer!==null){
+    const prevYellows=bkLog.filter(b=>b.team==='us'&&b.card==='y'&&b.pid===_bkPlayer&&b!==bkLog[bkLog.length-1]);
+    if(prevYellows.length>=1){
+      const pl=players.find(p=>p.id===_bkPlayer);
+      const nm=pl?pname(pl):'This player';
+      close('booking-ov');
+      updateScore(); render();
+      setTimeout(()=>{
+        document.getElementById('second-yellow-name').textContent=nm;
+        open('second-yellow-ov');
+        document.getElementById('second-yellow-yes').onclick=()=>{
+          bkLog.push({team:'us',card:'r',playerName:nm,pid:_bkPlayer,min,period});
+          close('second-yellow-ov');
+          updateScore(); render();
+        };
+        document.getElementById('second-yellow-no').onclick=()=>close('second-yellow-ov');
+      },200);
+      return;
+    }
+  }
   close('booking-ov');
   updateScore(); render();
 });
-document.getElementById('booking-btn').addEventListener('click',()=>{
+function openBookingModal(){
   buildBookingModal();
   document.getElementById('bk-undo-btn').disabled=!bkLog.length;
   open('booking-ov');
-});
+}
+document.getElementById('bookings-inline-btn').addEventListener('click',openBookingModal);
+
+// ── EDIT LOG ─────────────────────────────────────────────────
+function buildEditLog(){
+  const oppoShort=cfg.awayShort||cfg.away||'Oppo';
+  const colLabels=getPeriodCols();
+  const list=document.getElementById('editlog-list');
+  list.innerHTML='';
+
+  // Build combined sorted event list
+  const events=[];
+  gLog.forEach((g,i)=>events.push({src:'goal',idx:i,period:g.period||1,min:g.min||0,data:g}));
+  bkLog.forEach((b,i)=>events.push({src:'booking',idx:i,period:b.period||1,min:b.min||0,data:b}));
+  events.sort((a,b)=>a.period!==b.period?a.period-b.period:a.min-b.min);
+
+  if(!events.length){
+    list.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:16px;">No events logged yet.</div>';
+    return;
+  }
+
+  events.forEach(ev=>{
+    const d=ev.data;
+    const periodLbl=colLabels[ev.period-1]||('P'+ev.period);
+    const min=d.min?" ("+d.min+"')":'';
+    let text='';
+    if(ev.src==='goal'){
+      const scorer=d.scorer||(d.type==='for'?'Unknown':oppoShort);
+      const astLbl=d.assist==='pen'?'Pen':d.assist==='freekick'?'Free kick':d.assist;
+      const astStr=astLbl?' <span style="color:var(--text-muted);font-size:11px;font-style:italic;">('+astLbl+')</span>':'';
+      const icon='⚽';
+      const cls=d.type==='for'?'g-for':'g-ag';
+      text='<span class="'+cls+'">'+icon+' '+scorer+min+'</span>'+astStr+' <span style="color:var(--text-muted);font-size:11px;">'+periodLbl+'</span>';
+    } else {
+      const card=d.card==='y'?'🟨':'🟥';
+      const who=d.playerName||(d.team==='oppo'?oppoShort:'Unknown');
+      const cls=d.team==='us'?'g-for':'g-ag';
+      text='<span class="'+cls+'">'+card+' '+who+min+'</span> <span style="color:var(--text-muted);font-size:11px;">'+periodLbl+'</span>';
+    }
+
+    const row=document.createElement('div'); row.className='edit-log-row';
+    row.innerHTML='<div class="edit-log-text">'+text+'</div>'
+      +'<div class="edit-log-btns">'
+      +'<button class="edit-btn" data-src="'+ev.src+'" data-idx="'+ev.idx+'">✏️</button>'
+      +'<button class="del-btn" data-src="'+ev.src+'" data-idx="'+ev.idx+'">🗑️</button>'
+      +'</div>';
+    list.appendChild(row);
+  });
+
+  // Wire edit buttons
+  list.querySelectorAll('.edit-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const src=btn.dataset.src; const idx=parseInt(btn.dataset.idx);
+      openEditEvent(src,idx);
+    });
+  });
+
+  // Wire delete buttons
+  list.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const src=btn.dataset.src; const idx=parseInt(btn.dataset.idx);
+      if(!confirm('Delete this event?')) return;
+      if(src==='goal'){
+        // Reverse goal tally if scorer tracked
+        const g=gLog[idx];
+        if(g.type==='for'){gFor--; const pl=players.find(p=>pname(p)===g.scorer); if(pl&&pl.goals>0)pl.goals--;}
+        else gAg--;
+        gLog.splice(idx,1);
+        savePlayers();
+      } else {
+        bkLog.splice(idx,1);
+      }
+      updateScore(); render(); buildEditLog();
+    });
+  });
+}
+
+function openEditEvent(src,idx){
+  const oppoShort=cfg.awayShort||cfg.away||'Oppo';
+  const body=document.getElementById('editevent-body');
+  body.innerHTML='';
+
+  if(src==='goal'){
+    const g=gLog[idx];
+    document.getElementById('editevent-title').textContent='✏️ Edit goal';
+
+    // Scorer section
+    const scorerLbl=document.createElement('div');
+    scorerLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;';
+    scorerLbl.textContent='Scorer';
+    body.appendChild(scorerLbl);
+
+    let selectedScorer=g.scorer||null;
+    if(g.type==='for'){
+      // Player grid
+      const grid=document.createElement('div'); grid.className='scorer-grid'; body.appendChild(grid);
+      players.forEach(p=>{
+        const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
+        if(pname(p)===selectedScorer) b.classList.add('sel-goal');
+        b.addEventListener('click',()=>{grid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));b.classList.add('sel-goal');selectedScorer=pname(p);});
+        grid.appendChild(b);
+      });
+      const u=document.createElement('button'); u.className='sc-btn unk'; u.textContent='Unknown';
+      if(!selectedScorer) u.classList.add('sel-goal');
+      u.addEventListener('click',()=>{grid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));u.classList.add('sel-goal');selectedScorer=null;});
+      grid.appendChild(u);
+    } else {
+      // Free text for oppo
+      const inp=document.createElement('input'); inp.type='text'; inp.className='d-input';
+      inp.style.cssText='width:100%;font-size:14px;padding:4px 0 6px;border-bottom:1.5px solid var(--card-border);';
+      inp.value=g.scorer||oppoShort;
+      body.appendChild(inp);
+      selectedScorer=null; // will read from inp on save
+      body._scorerInp=inp;
+    }
+
+    // Assist section
+    const astLbl=document.createElement('div');
+    astLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;';
+    astLbl.textContent='Assist (optional)';
+    body.appendChild(astLbl);
+
+    let selectedAssist=g.assist||null;
+    const astGrid=document.createElement('div'); astGrid.className='scorer-grid'; body.appendChild(astGrid);
+    players.forEach(p=>{
+      const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
+      if(pname(p)===selectedAssist) b.classList.add('sel-assist');
+      b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=pname(p);});
+      astGrid.appendChild(b);
+    });
+    [['None','none'],['Pen','pen'],['Free kick','freekick']].forEach(([lbl,val])=>{
+      const b=document.createElement('button'); b.className='sc-btn unk'; b.textContent=lbl;
+      if(val==='none'&&!selectedAssist) b.classList.add('sel-assist');
+      else if(selectedAssist===val) b.classList.add('sel-assist');
+      b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=val==='none'?null:val;});
+      astGrid.appendChild(b);
+    });
+
+    document.getElementById('editevent-save').onclick=()=>{
+      // Update scorer
+      const oldScorer=g.scorer;
+      if(g.type==='for'){
+        // Adjust goal tallies
+        if(oldScorer){const op=players.find(p=>pname(p)===oldScorer);if(op&&op.goals>0)op.goals--;}
+        g.scorer=selectedScorer;
+        if(selectedScorer){const np=players.find(p=>pname(p)===selectedScorer);if(np)np.goals++;}
+      } else {
+        g.scorer=body._scorerInp?body._scorerInp.value.trim()||oppoShort:selectedScorer;
+      }
+      g.assist=selectedAssist;
+      savePlayers(); updateScore(); render(); buildEditLog();
+      close('editevent-ov');
+    };
+
+  } else {
+    // Booking edit
+    const b=bkLog[idx];
+    document.getElementById('editevent-title').textContent='✏️ Edit booking';
+
+    const nameLbl=document.createElement('div');
+    nameLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;';
+    nameLbl.textContent='Player';
+    body.appendChild(nameLbl);
+
+    let selectedPlayer=b.pid;
+    if(b.team==='us'){
+      const grid=document.createElement('div'); grid.className='scorer-grid'; body.appendChild(grid);
+      players.forEach(p=>{
+        const btn=document.createElement('button'); btn.className='sc-btn'; btn.textContent=pname(p);
+        if(p.id===selectedPlayer) btn.classList.add('sel-goal');
+        btn.addEventListener('click',()=>{grid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));btn.classList.add('sel-goal');selectedPlayer=p.id;});
+        grid.appendChild(btn);
+      });
+    } else {
+      const inp=document.createElement('input'); inp.type='text'; inp.className='d-input';
+      inp.style.cssText='width:100%;font-size:14px;padding:4px 0 6px;border-bottom:1.5px solid var(--card-border);';
+      inp.value=b.playerName||'';
+      body.appendChild(inp);
+      body._nameInp=inp;
+    }
+
+    // Card type
+    const cardLbl=document.createElement('div');
+    cardLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;';
+    cardLbl.textContent='Card';
+    body.appendChild(cardLbl);
+    let selectedCard=b.card;
+    const cardRow=document.createElement('div'); cardRow.style.cssText='display:flex;gap:8px;'; body.appendChild(cardRow);
+    [['🟨 Yellow','y'],['🟥 Red','r']].forEach(([lbl,val])=>{
+      const btn=document.createElement('button'); btn.className='sc-btn'+(val===selectedCard?' sel-goal':'');
+      btn.textContent=lbl;
+      btn.addEventListener('click',()=>{cardRow.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));btn.classList.add('sel-goal');selectedCard=val;});
+      cardRow.appendChild(btn);
+    });
+
+    document.getElementById('editevent-save').onclick=()=>{
+      b.card=selectedCard;
+      if(b.team==='us'){
+        b.pid=selectedPlayer;
+        const pl=players.find(p=>p.id===selectedPlayer);
+        b.playerName=pl?pname(pl):null;
+      } else {
+        b.playerName=body._nameInp?body._nameInp.value.trim()||null:b.playerName;
+      }
+      updateScore(); render(); buildEditLog();
+      close('editevent-ov');
+    };
+  }
+
+  open('editevent-ov');
+}
+
+document.getElementById('editlog-btn').addEventListener('click',()=>{buildEditLog();open('editlog-ov');});
+
+function applyBookingsVisibility(){
+  const show=!!cfg.hasBookings;
+  document.getElementById('bookings-inline-btn').style.display=show?'':'none';
+}
+document.getElementById('editlog-close').addEventListener('click',()=>close('editlog-ov'));
+document.getElementById('add-goal-btn').addEventListener('click',()=>openAddEvent('goal'));
+document.getElementById('add-booking-btn').addEventListener('click',()=>openAddEvent('booking'));
+
+function makePeriodSelect(selectedPeriod){
+  const colLabels=getPeriodCols();
+  const wrap=document.createElement('div');
+  wrap.style.cssText='margin:12px 0 6px;';
+  const lbl=document.createElement('div');
+  lbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;';
+  lbl.textContent='Period';
+  wrap.appendChild(lbl);
+  const sel=document.createElement('select');
+  sel.className='formation-select'; sel.style.cssText='width:100%;';
+  for(let i=1;i<=(cfg.periodCount||1);i++){
+    const opt=document.createElement('option');
+    opt.value=i; opt.textContent=colLabels[i-1]||('P'+i);
+    if(i===selectedPeriod) opt.selected=true;
+    sel.appendChild(opt);
+  }
+  wrap.appendChild(sel);
+  wrap._sel=sel;
+  return wrap;
+}
+
+function makeMinuteInput(val){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='margin:12px 0 6px;';
+  const lbl=document.createElement('div');
+  lbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;';
+  lbl.textContent="Minute (optional)";
+  wrap.appendChild(lbl);
+  const inp=document.createElement('input');
+  inp.type='text'; inp.inputMode='numeric'; inp.className='d-input';
+  inp.style.cssText='width:100%;font-size:14px;padding:4px 0 6px;border-bottom:1.5px solid var(--card-border);';
+  inp.placeholder='e.g. 23'; inp.value=val||'';
+  wrap.appendChild(inp);
+  wrap._inp=inp;
+  return wrap;
+}
+
+function makeTeamRow(selectedTeam, onchange){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='margin:12px 0 6px;';
+  const lbl=document.createElement('div');
+  lbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;';
+  lbl.textContent='Team';
+  wrap.appendChild(lbl);
+  const row=document.createElement('div'); row.style.cssText='display:flex;gap:8px;';
+  ['us','oppo'].forEach(val=>{
+    const b=document.createElement('button');
+    b.className='sc-btn'+(val===selectedTeam?' sel-goal':'');
+    b.textContent=val==='us'?(cfg.homeShort||cfg.home||'Us'):(cfg.awayShort||cfg.away||'Oppo');
+    b.addEventListener('click',()=>{
+      row.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));
+      b.classList.add('sel-goal');
+      if(onchange) onchange(val);
+    });
+    row.appendChild(b);
+  });
+  wrap.appendChild(row);
+  wrap._row=row;
+  return wrap;
+}
+
+function openAddEvent(type){
+  const oppoShort=cfg.awayShort||cfg.away||'Oppo';
+  const body=document.getElementById('editevent-body');
+  body.innerHTML='';
+  document.getElementById('editevent-title').textContent=type==='goal'?'+ Add goal':'+ Add booking';
+
+  // Period
+  const periodWrap=makePeriodSelect(currentPeriod||1);
+  body.appendChild(periodWrap);
+
+  // Minute
+  const minWrap=makeMinuteInput('');
+  body.appendChild(minWrap);
+
+  if(type==='goal'){
+    let selectedTeam='us';
+    let selectedScorer=null;
+    let selectedAssist=null;
+
+    // Scorer section (rebuilt on team change)
+    const teamWrap=makeTeamRow('us',(val)=>{selectedTeam=val;selectedScorer=null;selectedAssist=null;buildScorerSection();});
+    body.appendChild(teamWrap);
+
+    const scorerSection=document.createElement('div');
+    body.appendChild(scorerSection);
+
+    function buildScorerSection(){
+      scorerSection.innerHTML='';
+      const sLbl=document.createElement('div');
+      sLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;';
+      sLbl.textContent='Scorer';
+      scorerSection.appendChild(sLbl);
+      if(selectedTeam==='us'){
+        const grid=document.createElement('div'); grid.className='scorer-grid'; scorerSection.appendChild(grid);
+        players.forEach(p=>{
+          const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
+          b.addEventListener('click',()=>{grid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));b.classList.add('sel-goal');selectedScorer=pname(p);});
+          grid.appendChild(b);
+        });
+        const u=document.createElement('button'); u.className='sc-btn unk'; u.textContent='Unknown';
+        u.addEventListener('click',()=>{grid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));u.classList.add('sel-goal');selectedScorer=null;});
+        grid.appendChild(u);
+        // Assist section
+        const aLbl=document.createElement('div');
+        aLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;';
+        aLbl.textContent='Assist (optional)';
+        scorerSection.appendChild(aLbl);
+        const astGrid=document.createElement('div'); astGrid.className='scorer-grid'; scorerSection.appendChild(astGrid);
+        players.forEach(p=>{
+          const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
+          b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=pname(p);});
+          astGrid.appendChild(b);
+        });
+        [['None','none'],['Pen','pen'],['Free kick','freekick']].forEach(([lbl,val])=>{
+          const b=document.createElement('button'); b.className='sc-btn unk'; b.textContent=lbl;
+          if(val==='none') b.classList.add('sel-assist');
+          b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=val==='none'?null:val;});
+          astGrid.appendChild(b);
+        });
+      } else {
+        const inp=document.createElement('input'); inp.type='text'; inp.className='d-input';
+        inp.style.cssText='width:100%;font-size:14px;padding:4px 0 6px;border-bottom:1.5px solid var(--card-border);';
+        inp.placeholder=oppoShort;
+        scorerSection.appendChild(inp);
+        scorerSection._scorerInp=inp;
+        selectedAssist=null;
+      }
+    }
+
+    buildScorerSection();
+
+    document.getElementById('editevent-save').onclick=()=>{
+      const period=parseInt(periodWrap._sel.value)||1;
+      const min=parseInt(minWrap._inp.value)||0;
+      const type2=selectedTeam==='us'?'for':'ag';
+      let scorer=selectedScorer;
+      if(selectedTeam==='oppo'&&scorerSection._scorerInp) scorer=scorerSection._scorerInp.value.trim()||oppoShort;
+      // Update counters and player goals
+      if(type2==='for'){gFor++; if(scorer){const pl=players.find(p=>pname(p)===scorer);if(pl)pl.goals++;}}
+      else gAg++;
+      gLog.push({type:type2,scorer,sid:null,assist:selectedAssist,min:min||null,period});
+      savePlayers(); updateScore(); render(); buildEditLog();
+      close('editevent-ov');
+    };
+
+  } else {
+    // Add booking
+    let selectedTeam='us';
+    let selectedCard='y';
+    let selectedPlayer=null;
+
+    const teamWrap=makeTeamRow('us',(val)=>{selectedTeam=val;selectedPlayer=null;buildPlayerSection();});
+    body.appendChild(teamWrap);
+
+    const playerSection=document.createElement('div');
+    body.appendChild(playerSection);
+
+    function buildPlayerSection(){
+      playerSection.innerHTML='';
+      const pLbl=document.createElement('div');
+      pLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;';
+      pLbl.textContent='Player (optional)';
+      playerSection.appendChild(pLbl);
+      if(selectedTeam==='us'){
+        const grid=document.createElement('div'); grid.className='scorer-grid'; playerSection.appendChild(grid);
+        players.forEach(p=>{
+          const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
+          b.addEventListener('click',()=>{grid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));b.classList.add('sel-goal');selectedPlayer=p.id;});
+          grid.appendChild(b);
+        });
+      } else {
+        const inp=document.createElement('input'); inp.type='text'; inp.className='d-input';
+        inp.style.cssText='width:100%;font-size:14px;padding:4px 0 6px;border-bottom:1.5px solid var(--card-border);';
+        inp.placeholder='Player name (optional)';
+        playerSection.appendChild(inp);
+        playerSection._nameInp=inp;
+        selectedPlayer=null;
+      }
+      // Card
+      const cLbl=document.createElement('div');
+      cLbl.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;';
+      cLbl.textContent='Card';
+      playerSection.appendChild(cLbl);
+      const cardRow=document.createElement('div'); cardRow.style.cssText='display:flex;gap:8px;'; playerSection.appendChild(cardRow);
+      [['🟨 Yellow','y'],['🟥 Red','r']].forEach(([lbl,val])=>{
+        const b=document.createElement('button'); b.className='sc-btn'+(val===selectedCard?' sel-goal':'');
+        b.textContent=lbl;
+        b.addEventListener('click',()=>{cardRow.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-goal'));b.classList.add('sel-goal');selectedCard=val;});
+        cardRow.appendChild(b);
+      });
+    }
+
+    buildPlayerSection();
+
+    document.getElementById('editevent-save').onclick=()=>{
+      const period=parseInt(periodWrap._sel.value)||1;
+      const min=parseInt(minWrap._inp.value)||0;
+      let playerName=null; let pid=null;
+      if(selectedTeam==='us'&&selectedPlayer!==null){
+        const pl=players.find(p=>p.id===selectedPlayer); if(pl){playerName=pname(pl);pid=pl.id;}
+      } else if(selectedTeam==='oppo'&&playerSection._nameInp){
+        playerName=playerSection._nameInp.value.trim()||null;
+      }
+      bkLog.push({team:selectedTeam,card:selectedCard,playerName,pid,min:min||null,period});
+      updateScore(); render(); buildEditLog();
+      close('editevent-ov');
+    };
+  }
+
+  open('editevent-ov');
+}
+document.getElementById('editevent-cancel').addEventListener('click',()=>close('editevent-ov'));
 
 function buildExport(){
   const us=cfg.home||'Us'; const oppo=cfg.away||'Oppo'; const date=cfg.date||''; const loc=cfg.location||'';
@@ -1912,7 +2446,7 @@ function buildExport(){
           const min=e.min?" ("+e.min+"')":'';
           let ast='';
           if(e.assist==='pen') ast=' (pen)';
-          else if(e.assist==='sp') ast=' (sp)';
+          else if(e.assist==='freekick') ast=' (Free kick)';
           else if(e.assist) ast=' ('+e.assist+')';
           L.push('    ⚽ '+side+': '+who+min+ast);
         } else {
@@ -1932,7 +2466,7 @@ function buildExport(){
   gLog.forEach(g=>{
     if(g.type==='for'&&g.assist&&typeof g.assist==='number'){
       assistCounts[g.assist]=(assistCounts[g.assist]||0)+1;
-    } else if(g.type==='for'&&g.assist&&typeof g.assist==='string'&&g.assist!=='pen'&&g.assist!=='sp'){
+    } else if(g.type==='for'&&g.assist&&typeof g.assist==='string'&&g.assist!=='pen'&&g.assist!=='freekick'){
       // assist stored as name — match by name
       const ap=players.find(p=>pname(p)===g.assist);
       if(ap) assistCounts[ap.id]=(assistCounts[ap.id]||0)+1;
