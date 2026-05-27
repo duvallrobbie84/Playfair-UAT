@@ -1625,7 +1625,7 @@ function updateScore(){
   }
 
   // ── Section 2: Assists (flat list, muted, hidden if none) ──
-  const assistGoals=gLog.filter(g=>g.assist&&g.assist!=='pen'&&g.assist!=='freekick');
+  const assistGoals=gLog.filter(g=>g.assist);
   if(assistGoals.length){
     const div=document.createElement('div'); div.className='g-section-divider'; el.appendChild(div);
     const hdr=document.createElement('div'); hdr.className='g-section-hdr'; hdr.textContent='Assists'; el.appendChild(hdr);
@@ -2621,13 +2621,14 @@ function buildScoresheetHtml(logoSrc){
   }
 
   // Assists
-  const assistGoals = gLog.filter(g=>g.assist&&g.assist!=='pen'&&g.assist!=='freekick');
+  const assistGoals = gLog.filter(g=>g.assist);
   let assistsHtml = '';
   if(assistGoals.length){
     const parts = assistGoals.sort((a,b)=>(a.min||0)-(b.min||0)).map(g=>{
       const min = g.min ? ` (${g.min}')` : '';
       const col = g.type==='for'?'#3B6D11':'#A32D2D';
-      return `<span style="color:${col};font-style:italic;font-size:11px;">${g.assist}${min}</span>`;
+      const astLbl=g.assist==='pen'?'Pen':g.assist==='freekick'?'Free kick':g.assist;
+      return `<span style="color:${col};font-style:italic;font-size:11px;">${astLbl}${min}</span>`;
     });
     assistsHtml = `<div style="border-top:0.5px solid #f0f0f0;margin-top:8px;padding-top:8px;">
       <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Assists</div>
