@@ -435,7 +435,9 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
 .g-ast { font-size: 11px; color: var(--text-muted); font-style: italic; }
 .g-section-divider { border-top: 1px solid var(--card-border); margin: 10px 0 6px; }
 .g-section-hdr { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.g-ast-name { font-size: 13px; color: var(--text-muted); font-style: italic; }
+.g-ast-name { font-size: 11px; font-style: italic; }
+.g-ast-name.ast-for { color: var(--green); }
+.g-ast-name.ast-ag  { color: var(--red); }
 .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 24px; transition: 0.2s; }
@@ -1491,6 +1493,7 @@ document.getElementById('ag-btn').addEventListener('click',()=>{
   const defaultName=cfg.awayShort||cfg.away||'Oppo';
   const inp=document.getElementById('ag-scorer-input');
   inp.value=defaultName;
+  document.getElementById('ag-assist-input').value='';
   open('ag-scorer-ov');
   setTimeout(()=>{inp.select();},50);
 });
@@ -1551,19 +1554,18 @@ function buildScorer(){
     const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
     b.dataset.aid=p.id;
     b.addEventListener('click',()=>{
-      document.querySelectorAll('#assist-grid .sc-btn').forEach(x=>x.classList.remove('sel-assist'));
-      b.classList.add('sel-assist');
-      _selectedAssist=p.id;
+      if(_selectedAssist===p.id){b.classList.remove('sel-assist');_selectedAssist=null;}
+      else{document.querySelectorAll('#assist-grid .sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');_selectedAssist=p.id;}
     });
     ag.appendChild(b);
   });
   // Special buttons: None, Pen, SP
-  [['None','none'],['Pen','pen'],['Free kick','freekick']].forEach(([label,val])=>{
+  [['Pen','pen'],['Free kick','freekick']].forEach(([label,val])=>{
     const b=document.createElement('button'); b.className='sc-btn unk'; b.textContent=label;
     b.addEventListener('click',()=>{
       document.querySelectorAll('#assist-grid .sc-btn').forEach(x=>x.classList.remove('sel-assist'));
       b.classList.add('sel-assist');
-      _selectedAssist=val==='none'?null:val;
+      _selectedAssist=val;
     });
     ag.appendChild(b);
   });
@@ -1630,7 +1632,8 @@ function updateScore(){
     const parts=assistGoals.sort((a,b)=>(a.min||0)-(b.min||0)).map(g=>{
       const min=g.min?(' ('+g.min+"')"):'';
       const lbl=g.assist==='pen'?'Pen':g.assist==='freekick'?'Free kick':g.assist;
-      return '<span class="g-ast-name">'+lbl+min+'</span>';
+      const cls=g.type==='for'?'g-ast-name ast-for':'g-ast-name ast-ag';
+      return '<span class="'+cls+'">'+lbl+min+'</span>';
     });
     const row=document.createElement('div'); row.className='goal-row';
     row.innerHTML=parts.join('<span class="g-sep">, </span>');
@@ -2109,14 +2112,16 @@ function openEditEvent(src,idx){
     players.forEach(p=>{
       const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
       if(pname(p)===selectedAssist) b.classList.add('sel-assist');
-      b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=pname(p);});
+      b.addEventListener('click',()=>{
+        if(selectedAssist===pname(p)){b.classList.remove('sel-assist');selectedAssist=null;}
+        else{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=pname(p);}
+      });
       astGrid.appendChild(b);
     });
-    [['None','none'],['Pen','pen'],['Free kick','freekick']].forEach(([lbl,val])=>{
+    [['Pen','pen'],['Free kick','freekick']].forEach(([lbl,val])=>{
       const b=document.createElement('button'); b.className='sc-btn unk'; b.textContent=lbl;
-      if(val==='none'&&!selectedAssist) b.classList.add('sel-assist');
-      else if(selectedAssist===val) b.classList.add('sel-assist');
-      b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=val==='none'?null:val;});
+      if(selectedAssist===val) b.classList.add('sel-assist');
+      b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=val;});
       astGrid.appendChild(b);
     });
 
@@ -2315,13 +2320,15 @@ function openAddEvent(type){
         const astGrid=document.createElement('div'); astGrid.className='scorer-grid'; scorerSection.appendChild(astGrid);
         players.forEach(p=>{
           const b=document.createElement('button'); b.className='sc-btn'; b.textContent=pname(p);
-          b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=pname(p);});
+          b.addEventListener('click',()=>{
+        if(selectedAssist===pname(p)){b.classList.remove('sel-assist');selectedAssist=null;}
+        else{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=pname(p);}
+      });
           astGrid.appendChild(b);
         });
-        [['None','none'],['Pen','pen'],['Free kick','freekick']].forEach(([lbl,val])=>{
+        [['Pen','pen'],['Free kick','freekick']].forEach(([lbl,val])=>{
           const b=document.createElement('button'); b.className='sc-btn unk'; b.textContent=lbl;
-          if(val==='none') b.classList.add('sel-assist');
-          b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=val==='none'?null:val;});
+          b.addEventListener('click',()=>{astGrid.querySelectorAll('.sc-btn').forEach(x=>x.classList.remove('sel-assist'));b.classList.add('sel-assist');selectedAssist=val;});
           astGrid.appendChild(b);
         });
       } else {
@@ -2591,34 +2598,64 @@ function buildScoresheetHtml(logoSrc){
   const colLabels = getPeriodCols();
   const numPeriods = cfg.periodCount || 1;
 
+  // Goals by period
   let goalsHtml = '';
   if(gLog.length===0){
     goalsHtml='<div style="color:#ccc;font-size:13px;">No goals scored</div>';
   } else {
-    // Group by period, same logic as the app
     const byPeriod = {};
     gLog.forEach(g=>{ const p=g.period||1; if(!byPeriod[p])byPeriod[p]=[]; byPeriod[p].push(g); });
     Object.keys(byPeriod).sort((a,b)=>a-b).forEach(p=>{
-      const goals = byPeriod[p];
+      const goals = byPeriod[p].sort((a,b)=>(a.min||0)-(b.min||0));
       const forG = goals.filter(g=>g.type==='for');
       const agG  = goals.filter(g=>g.type==='ag');
       const score = forG.length+'-'+agG.length;
-      const lbl = numPeriods>1 ? (colLabels[p-1]||('P'+p))+' '+score+': ' : '';
+      const lbl = numPeriods>1 ? (colLabels[p-1]||('P'+p))+' '+score : '';
       const parts = goals.map(g=>{
         const min = g.min ? ` (${g.min}')` : '';
         if(g.type==='for') return `<span style="color:#3B6D11;font-weight:600;">${g.scorer||'Unknown'}${min}</span>`;
-        else               return `<span style="color:#A32D2D;font-weight:600;">${oppoShort}${min}</span>`;
+        else               return `<span style="color:#A32D2D;font-weight:600;">${g.scorer||oppoShort}${min}</span>`;
       });
-      goalsHtml += `<div style="padding:4px 0;border-bottom:0.5px solid #f0f0f0;font-size:12px;line-height:1.6;">${lbl?`<span style="color:#bbb;">${lbl}</span>`:''}${parts.join('<span style="color:#bbb;">, </span>')}</div>`;
+      goalsHtml += `<div style="padding:3px 0;font-size:12px;line-height:1.6;">${lbl?`<span style="color:#999;font-weight:600;">${lbl}: </span>`:''}${parts.join('<span style="color:#bbb;">, </span>')}</div>`;
     });
   }
 
+  // Assists
+  const assistGoals = gLog.filter(g=>g.assist&&g.assist!=='pen'&&g.assist!=='freekick');
+  let assistsHtml = '';
+  if(assistGoals.length){
+    const parts = assistGoals.sort((a,b)=>(a.min||0)-(b.min||0)).map(g=>{
+      const min = g.min ? ` (${g.min}')` : '';
+      const col = g.type==='for'?'#3B6D11':'#A32D2D';
+      return `<span style="color:${col};font-style:italic;font-size:11px;">${g.assist}${min}</span>`;
+    });
+    assistsHtml = `<div style="border-top:0.5px solid #f0f0f0;margin-top:8px;padding-top:8px;">
+      <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Assists</div>
+      <div style="font-size:12px;line-height:1.6;">${parts.join('<span style="color:#bbb;">, </span>')}</div>
+    </div>`;
+  }
+
+  // Bookings
+  let bookingsHtml = '';
+  if(bkLog.length){
+    const parts = bkLog.sort((a,b)=>(a.min||0)-(b.min||0)).map(b=>{
+      const card = b.card==='y'?'🟨':'🟥';
+      const who = b.playerName||(b.team==='oppo'?oppoShort:'Unknown');
+      const min = b.min ? ` (${b.min}')` : '';
+      const col = b.team==='us'?'#3B6D11':'#A32D2D';
+      return `<span style="color:${col};font-size:12px;">${card} ${who}${min}</span>`;
+    });
+    bookingsHtml = `<div style="border-top:0.5px solid #f0f0f0;margin-top:8px;padding-top:8px;">
+      <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Bookings</div>
+      <div style="font-size:12px;line-height:1.6;">${parts.join('<span style="color:#bbb;">, </span>')}</div>
+    </div>`;
+  }
+
   return `
-    <div style="background:#1e7d34;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:12px;">
+    <div style="background:#2d6a4f;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:12px;">
       <img src="${logoSrc}" style="height:44px;width:44px;border-radius:8px;object-fit:cover;flex-shrink:0;">
       <div style="text-align:center;">
-        <div style="font-size:22px;font-weight:800;color:#fff;">Playfair</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.75);font-style:italic;">Fair time for every player</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;">Playfair.coach</div>
       </div>
     </div>
     <div style="background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:8px;">
@@ -2629,8 +2666,10 @@ function buildScoresheetHtml(logoSrc){
         <div style="font-size:28px;font-weight:700;color:#ccc;">–</div>
         <div style="text-align:center;"><div style="font-size:42px;font-weight:800;color:#A32D2D;">${gAg}</div><div style="font-size:12px;color:#888;margin-top:2px;">${oppo}</div></div>
       </div>
-      <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">⚽ Goalscorers</div>
+      <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px;">⚽ Goals</div>
       ${goalsHtml}
+      ${assistsHtml}
+      ${bookingsHtml}
     </div>`;
 }
 
@@ -2641,7 +2680,7 @@ document.getElementById('ss-scoresheet').addEventListener('click',()=>{
   const wrap = document.createElement('div');
   wrap.style.cssText='position:fixed;left:-9999px;top:0;width:380px;background:#f2f2f7;padding:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
   wrap.innerHTML = buildScoresheetHtml(logoSrc) +
-    `<div style="text-align:center;padding:8px 0 4px;font-size:11px;color:#aaa;">Powered by playfair.coach</div>`;
+    `<div style="text-align:center;padding:8px 0 4px;font-size:11px;color:#aaa;">Shared via <span style="color:#1a73e8;">www.playfair.coach</span> — fair time for every player</div>`;
   document.body.appendChild(wrap);
   doCapture(wrap,'scoresheet').then(()=>{ document.body.removeChild(wrap); });
 });
@@ -2723,7 +2762,7 @@ document.getElementById('ss-coaches').addEventListener('click',()=>{
   if(notesHtml) wrap.insertAdjacentHTML('beforeend', notesHtml);
 
   wrap.insertAdjacentHTML('beforeend',
-    `<div style="text-align:center;padding:8px 0 4px;font-size:11px;color:#aaa;">Powered by playfair.coach</div>`);
+    `<div style="text-align:center;padding:8px 0 4px;font-size:11px;color:#aaa;">Shared via <span style="color:#1a73e8;">www.playfair.coach</span> — fair time for every player</div>`);
 
   document.body.appendChild(wrap);
   doCapture(wrap,'coaches-view').then(()=>{ document.body.removeChild(wrap); });
