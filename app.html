@@ -748,6 +748,8 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
         <div class="d-field">
           <div class="d-lbl">Squad size</div>
           <select class="formation-select" id="m-squad-select">
+            <option value="3">3 players</option>
+            <option value="4">4 players</option>
             <option value="5">5 players</option>
             <option value="6">6 players</option>
             <option value="7">7 players</option>
@@ -1165,7 +1167,7 @@ function updateMatchInfo(){
 // ── SETUP SCREEN ─────────────────────────────────────────────
 function buildSetup(){
   const sp=document.getElementById('squad-pills'); sp.innerHTML='';
-  for(let i=5;i<=15;i++){
+  for(let i=3;i<=15;i++){
     const b=document.createElement('button'); b.className='pill'+(i===cfg.squad?' sel':''); b.textContent=i;
     b.addEventListener('click',()=>{cfg.squad=i;sp.querySelectorAll('.pill').forEach(p=>p.classList.remove('sel'));b.classList.add('sel');refreshSetupFormValidation();refreshSetupSummary();buildPlayerNameInputs('setup-player-names',false);});
     sp.appendChild(b);
