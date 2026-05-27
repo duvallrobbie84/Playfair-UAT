@@ -421,7 +421,7 @@ body.dark .pl-bar-track { background: rgba(255,255,255,0.1); }
 .modal .sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
 .modal-sm p { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.5; }
 .mbtns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
-.mbtns button { padding: 9px 18px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--card-border); border-radius: 10px; cursor: pointer; background: var(--bg); color: var(--text-primary); font-family: var(--font); transition: all 0.12s; }
+.mbtns button, .mbtns-btn { padding: 9px 18px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--card-border); border-radius: 10px; cursor: pointer; background: var(--bg); color: var(--text-primary); font-family: var(--font); transition: all 0.12s; }
 .mbtns .ok-blue { background: var(--green); color: #fff; border-color: var(--green); }
 .mbtns .ok-red  { background: var(--red); color: #fff; border-color: var(--red); }
 
@@ -956,8 +956,8 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
     <h3>✏️ Edit log</h3>
     <div id="editlog-list" style="overflow-y:auto;flex:1;margin:10px 0;"></div>
     <div style="display:flex;gap:8px;margin:8px 0 4px;">
-      <button class="ok-blue" id="add-goal-btn" style="flex:1;">+ Add goal</button>
-      <button class="ok-blue" id="add-booking-btn" style="flex:1;">+ Add booking</button>
+      <button class="mbtns-btn" id="add-goal-btn" style="flex:1;">+ Add goal</button>
+      <button class="mbtns-btn" id="add-booking-btn" style="flex:1;">+ Add booking</button>
     </div>
     <div class="mbtns"><button id="editlog-close">Close</button></div>
   </div>
