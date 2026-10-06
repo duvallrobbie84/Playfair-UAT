@@ -27,6 +27,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .hero-sub{font-size:16px;color:rgba(255,255,255,0.85);line-height:1.6;max-width:400px;margin:0 auto 28px;}
 .hero-cta{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--primary-dark);font-family:'Inter',sans-serif;font-size:20px;font-weight:700;padding:18px 40px;border-radius:16px;text-decoration:none;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 20px rgba(0,0,0,0.2);letter-spacing:0.2px;margin-bottom:24px;}
 .hero-cta:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,0,0,0.25);}
+.hero-link{display:block;margin-top:18px;color:rgba(255,255,255,0.92);font-size:15px;font-weight:600;text-decoration:none;}
+.hero-link:hover{text-decoration:underline;}
 .container{max-width:620px;margin:0 auto;padding:0 16px;}
 .card{background:var(--card-bg);border-radius:22px;padding:28px 24px;margin-top:20px;box-shadow:0 1px 2px rgba(20,15,10,0.04), 0 6px 16px rgba(20,15,10,0.06);}
 .card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:10px;}
@@ -111,7 +113,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     "Fairness alerts",
     "Goal logging",
     "Match export and screenshot",
-    "Works offline"
+    "Works offline",
+    "Fair time calculator"
   ],
   "author": {
     "@type": "Organization",
@@ -226,6 +229,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <h1>Fair time for <em>every</em> player</h1>
     <p class="hero-sub">Free playing time tracker for football, rugby, hockey and more. Track minutes in real time, plan subs fairly, and make sure every player gets their game time.</p>
     <a href="app.html" class="hero-cta">Open Playfair <svg width="16" height="16" viewBox="0 0 20 20"><polygon points="5,3 17,10 5,17" fill="currentColor"/></svg></a>
+    <a href="calculator.html" class="hero-link" onclick="if(window.gtag)gtag('event','calculator_open',{source:'landing_hero'})">Free fair time calculator →</a>
   </div>
 </div>
 
@@ -239,6 +243,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <p>Everything is saved locally on your device between sessions, so your squad names and match planner are always ready when you need them.</p>
   </div>
 
+  <div class="card">
+    <div class="card-label">Free tool</div>
+    <h2>Fair time calculator</h2>
+    <p>Not sure how many minutes each player should get? Enter your squad size, team size and game length. The calculator works out fair time per player, allows for goalkeepers or returning players on set minutes, and suggests how often to make substitutions.</p>
+    <a href="calculator.html" onclick="if(window.gtag)gtag('event','calculator_open',{source:'landing_card'})" style="display:inline-block;margin-top:6px;background:var(--primary);color:#fff;font-size:14px;font-weight:600;padding:10px 22px;border-radius:12px;text-decoration:none;">Open the calculator</a>
+  </div>
   <div class="card">
     <div class="card-label">User Guide</div>
     <h2 class="guide-toggle" onclick="toggleGuide()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">

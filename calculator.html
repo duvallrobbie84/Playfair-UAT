@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fair Playing Time Calculator for Coaches | Playfair</title>
+<meta name="description" content="Free fair playing time calculator for football, rugby, hockey and more. Enter squad size, team size and game length to get minutes per player and a substitution plan.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://playfair.coach/calculator">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://playfair.coach/calculator">
+<meta property="og:title" content="Fair Playing Time Calculator | Playfair">
+<meta property="og:description" content="Work out fair minutes per player and how often to make substitutions. Free, no sign-up.">
+<meta property="og:image" content="https://playfair.coach/logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fair Playing Time Calculator | Playfair">
+<meta name="twitter:description" content="Work out fair minutes per player and how often to make substitutions. Free, no sign-up.">
+<meta name="twitter:image" content="https://playfair.coach/logo.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HQJD9B3HRW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-HQJD9B3HRW');
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Playfair Fair Time Calculator",
+  "url": "https://playfair.coach/calculator",
+  "description": "Free calculator that works out fair playing time per player and suggests how often to substitute.",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0"},
+  "isPartOf": {"@type": "WebSite", "name": "Playfair", "url": "https://playfair.coach/"}
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#E8542F;--primary-dark:#C23F1F;--primary-pale:rgba(232,84,47,0.12);--primary-border:rgba(232,84,47,0.4);
+  --text:#161616;--muted:#6B6F76;--card-bg:#fff;--bg:#F7F4F1;--line:#ECE7E2;
+  --warn-bg:#FFF4E0;--warn:#9A5B00;--err-bg:#FDE9E5;--err:#B3261E;--ok:#2E7D32;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px}
+.hero{background:var(--primary);padding:28px 20px 72px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 40%,rgba(255,255,255,.1),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(0,0,0,.12),transparent 50%)}
+.hero-inner{position:relative;max-width:560px;margin:0 auto}
+.hero a{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:14px}
+.hero a:hover{color:#fff}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,7vw,40px);color:#fff;line-height:1.1;margin-bottom:6px}
+.hero p{color:rgba(255,255,255,.85);font-size:15px}
+main{max-width:560px;margin:-44px auto 0;padding:0 16px;position:relative}
+.card{background:var(--card-bg);border-radius:22px;padding:24px 20px;margin-top:16px;box-shadow:0 1px 2px rgba(20,15,10,.04),0 6px 16px rgba(20,15,10,.06)}
+.card h2{font-family:'Space Grotesk',sans-serif;font-size:20px;margin-bottom:4px}
+.hint{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.field{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.field:first-of-type{border-top:0}
+.field label{font-size:15px;font-weight:500}
+.field small{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.step{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;flex-shrink:0}
+.step button{width:40px;height:40px;border:0;background:var(--bg);font-size:20px;color:var(--primary-dark);cursor:pointer}
+.step button:active{background:var(--primary-pale)}
+.step input{width:52px;height:40px;border:0;text-align:center;font:600 16px 'Inter',sans-serif;color:var(--text);background:#fff;-moz-appearance:textfield}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none}
+button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.result{background:var(--primary-pale);border:1.5px solid var(--primary-border);border-radius:18px;padding:20px;text-align:center}
+.big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:56px;line-height:1;color:var(--primary-dark)}
+.big span{font-size:22px;margin-left:4px}
+.result p{font-size:14px;color:var(--text);margin-top:8px;line-height:1.5}
+.result .sub{color:var(--muted);font-size:13px}
+.row{padding:14px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row-top{display:flex;gap:8px;margin-bottom:10px}
+.row-top input{flex:1;min-width:0;height:40px;border:1.5px solid var(--line);border-radius:12px;padding:0 12px;font:500 15px 'Inter',sans-serif;color:var(--text)}
+.rm{width:40px;height:40px;border:0;border-radius:12px;background:var(--bg);color:var(--muted);font-size:20px;cursor:pointer}
+.rm:hover{color:var(--err)}
+.row-in{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.row-in>div>span{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.full{height:40px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font:600 13px 'Inter',sans-serif;color:var(--muted);cursor:pointer}
+.full.on{background:var(--primary-pale);border-color:var(--primary-border);color:var(--primary-dark)}
+.add{width:100%;margin-top:8px;height:46px;border-radius:14px;border:1.5px dashed var(--primary-border);background:transparent;color:var(--primary-dark);font:600 14px 'Inter',sans-serif;cursor:pointer}
+.add:hover{background:var(--primary-pale)}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+.seg button{flex:1;min-width:62px;padding:8px 6px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font:600 14px 'Inter',sans-serif;color:var(--text);cursor:pointer;line-height:1.25}
+.seg button small{display:block;font-size:11px;font-weight:500;color:var(--muted)}
+.seg button.on{border-color:var(--primary);background:var(--primary-pale);color:var(--primary-dark)}
+.rota{margin-top:14px}
+.rr{display:flex;align-items:center;gap:8px;height:30px}
+.rr .nm{width:78px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.rr .tr{flex:1;height:14px;position:relative;background:#F3EFEB;border-radius:4px;overflow:hidden}
+.rr .tr i{position:absolute;top:0;bottom:0;background:var(--primary)}
+.rr.fx .tr i{background:#9A9EA5}
+.rr .tr::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0,transparent calc(var(--w) - 1px),rgba(255,255,255,.9) calc(var(--w) - 1px),rgba(255,255,255,.9) var(--w))}
+.rr .mn{width:36px;display:flex;justify-content:flex-end;flex-shrink:0}
+.dot{min-width:26px;height:26px;padding:0 4px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.dot.g{background:#2E9E5B}.dot.a{background:#F2A100;color:#2a1c00}.dot.r{background:#D93025}
+.rr.ax{height:18px;font-size:11px;color:var(--muted)}
+.rr.ax .tr{background:none;display:flex;justify-content:space-between;overflow:visible}
+.rr.ax .tr::after{display:none}
+.guide{background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5;margin-top:12px}
+.guide p{margin-top:6px}
+.sum{font-size:14px;line-height:1.55;margin-top:12px}
+.sum p{margin-top:6px}
+.sum .m{color:var(--muted);font-size:13px}
+.tally{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.5}
+.msgs{display:flex;flex-direction:column;gap:8px}
+.msg{font-size:13px;line-height:1.5;padding:10px 14px;border-radius:12px;background:var(--warn-bg);color:var(--warn)}
+.msg.err{background:var(--err-bg);color:var(--err)}
+.msg.ok{background:#E8F4E9;color:var(--ok)}
+.foot{text-align:center;margin-top:28px}
+.foot a{font-size:13px;color:var(--muted);text-decoration:none}
+.foot a:hover{color:var(--primary)}
+</style>
+</head>
+<body>
+<header class="hero"><div class="hero-inner">
+  <a href="app.html">← Back to Playfair</a>
+  <h1>Fair time calculator</h1>
+  <p>Work out what's fair before kick-off.</p>
+</div></header>
+
+<main>
+  <section class="card">
+    <h2>Your match</h2>
+    <p class="hint">Nothing here affects a live match.</p>
+    <div class="field"><label for="squad">Squad size<small>Everyone available</small></label><div class="step" data-for="squad"></div></div>
+    <div class="field"><label for="team">Team size<small>Players on the pitch</small></label><div class="step" data-for="team"></div></div>
+    <div class="field"><label for="len">Game length<small>Total minutes</small></label><div class="step" data-for="len"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="result" id="overall"></div>
+  </section>
+
+  <section class="card">
+    <h2>Players with set minutes</h2>
+    <p class="hint">A keeper who plays the whole game, a player returning from injury, anyone with a fixed time. Add a group for each.</p>
+    <div id="rows"></div>
+    <button type="button" class="add" id="addRow">+ Add players</button>
+    <div class="tally" id="tally"></div>
+  </section>
+
+  <section class="card">
+    <h2>Everyone else</h2>
+    <div class="result" id="rest" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card">
+    <h2>Substitution plan</h2>
+    <div id="plans" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card" id="checkCard">
+    <h2>Check</h2>
+    <div class="msgs" id="msgs" style="margin-top:12px"></div>
+  </section>
+
+  <div class="foot"><a href="app.html">← Back to the app</a></div>
+</main>
+
+<script>
+const S={squad:12,team:7,len:60};
+const R=[];
+const $=s=>document.querySelector(s);
+const fmt=n=>{const r=Math.round(n*10)/10;return Number.isInteger(r)?String(r):r.toFixed(1)};
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,isNaN(v)?lo:v));
+const eff=r=>r.full?S.len:r.m;
+
+function stepper(el,get,set,min,max,id){
+  el.innerHTML=`<button type="button" aria-label="Decrease">−</button><input type="number" inputmode="numeric" ${id?`id="${id}"`:''} min="${min}" max="${max}"><button type="button" aria-label="Increase">+</button>`;
+  const inp=el.querySelector('input'),[dec,inc]=el.querySelectorAll('button');
+  inp.value=get();
+  const apply=v=>{v=clamp(v,min,max);set(v);inp.value=v;if(!window.__used){window.__used=1;if(window.gtag)gtag('event','calculator_used')}render()};
+  dec.onclick=()=>apply(get()-1);
+  inc.onclick=()=>apply(get()+1);
+  inp.onchange=()=>apply(parseInt(inp.value,10));
+}
+
+document.querySelectorAll('.step[data-for]').forEach(el=>{
+  const k=el.dataset.for,lim={squad:[1,30],team:[1,11],len:[1,240]}[k];
+  stepper(el,()=>S[k],v=>S[k]=v,lim[0],lim[1],k);
+});
+
+function rows(){
+  $('#rows').innerHTML=R.map((r,i)=>`
+    <div class="row">
+      <div class="row-top"><input type="text" id="n${i}" value="${r.n.replace(/"/g,'&quot;')}" placeholder="Label (optional)" aria-label="Label"><button type="button" class="rm" data-i="${i}" aria-label="Remove">×</button></div>
+      <div class="row-in">
+        <div><span>Players</span><div class="step" data-r="${i}" data-f="c"></div></div>
+        <div><span>Minutes each</span><div class="step" data-r="${i}" data-f="m"></div></div>
+        <button type="button" class="full" id="f${i}" data-i="${i}">Full game</button>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.step[data-r]').forEach(el=>{
+    const r=R[el.dataset.r],f=el.dataset.f,i=el.dataset.r;
+    if(f==='c')stepper(el,()=>r.c,v=>r.c=v,1,30,'c'+i);
+    else stepper(el,()=>eff(r),v=>{r.m=v;r.full=false},0,240,'m'+i);
+  });
+  R.forEach((r,i)=>{$('#n'+i).oninput=e=>r.n=e.target.value});
+  document.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{R.splice(+b.dataset.i,1);rows();render()});
+  document.querySelectorAll('.full').forEach(b=>b.onclick=()=>{R[+b.dataset.i].full=true;render()});
+}
+$('#addRow').onclick=()=>{R.push({n:'',c:1,m:10,full:false});rows();render()};
+
+function render(){
+  const {squad,team,len}=S,msgs=[];
+  const pool=len*team,fair=len*team/squad;
+  const o=$('#overall');
+  if(team>squad)o.innerHTML='<p>Squad size must be at least the team size.</p>';
+  else{
+    const bench=squad-team;
+    o.innerHTML=`<div class="big">${fmt(fair)}<span>min</span></div><p>is fair time for each player</p>
+      <p class="sub">${bench===0?'No bench — everyone plays the full game.':`${bench} on the bench at any time · ${fmt(pool)} player-minutes to share`}</p>`;
+  }
+  // sync full-game rows and buttons
+  R.forEach((r,i)=>{const m=$('#m'+i),f=$('#f'+i);if(m)m.value=eff(r);if(f)f.classList.toggle('on',r.full)});
+  const fp=R.reduce((a,r)=>a+r.c,0),fm=R.reduce((a,r)=>a+r.c*eff(r),0);
+  const rp=squad-fp,rm=pool-fm;
+  $('#tally').textContent=R.length?`${fp} player${fp===1?'':'s'} · ${fmt(fm)} of ${fmt(pool)} player-minutes used`:'No set-minute players. Everyone gets the fair time above.';
+  const rest=$('#rest');
+  if(team>squad){rest.innerHTML='';msgs.push(['err',`Squad (${squad}) is smaller than team size (${team}).`])}
+  else{
+    if(rp>0){
+      const each=rm/rp;
+      rest.innerHTML=`<div class="big">${each<0?'—':fmt(each)}<span>${each<0?'':'min'}</span></div>
+        <p>each for the other ${rp} player${rp===1?'':'s'}</p>
+        <p class="sub">${fmt(rm)} minutes left to share${R.length?` · ${each>=fair?'+':'−'}${fmt(Math.abs(each-fair))} vs equal split`:''}</p>`;
+      if(each>len)msgs.push(['err',`The other ${rp} would each need ${fmt(each)} min, more than the ${len}-minute game. Give the set-minute players less time, or add set-minute players.`]);
+    }else{
+      rest.innerHTML=`<p>No other players. Everyone has set minutes.</p>`;
+      if(Math.abs(rm)>0.01)msgs.push([rm>0?'warn':'err',rm>0?`${fmt(rm)} player-minutes are unallocated, so pitch spots will go unfilled.`:`Set minutes exceed available time by ${fmt(-rm)} min.`]);
+    }
+    if(rp<0)msgs.push(['err',`Set-minute players (${fp}) outnumber the squad (${squad}).`]);
+    if(rm<0&&rp>0)msgs.push(['err',`Set minutes use ${fmt(-rm)} more than the ${fmt(pool)} available. Reduce minutes or players.`]);
+    R.forEach(r=>{if(eff(r)>len)msgs.push(['err',`${r.n||'A group'}: ${eff(r)} min is longer than the ${len}-minute game.`])});
+  }
+  plans();
+  if(!msgs.length)msgs.push(['ok','Numbers add up.']);
+  $('#msgs').innerHTML=msgs.map(m=>`<div class="msg ${m[0]}">${m[1]}</div>`).join('');
+}
+
+let chosenU=null;
+function cands(){
+  const {len}=S;
+  let c=[5,10,15,20,25,30,45].filter(u=>u<=len/2&&Math.abs(len/u-Math.round(len/u))<1e-9);
+  if(!c.length)c=[2,3,4,6].map(n=>len/n).filter(u=>u>=1);
+  return c;
+}
+function build(u){
+  const {squad,team,len}=S;
+  const M=Math.round(len/u);
+  const fp=R.reduce((a,r)=>a+r.c,0),rp=squad-fp;
+  if(rp<0||team>squad||M<2)return null;
+  const P=[];let fixedBlocks=0,fixedMins=0;
+  R.forEach(r=>{for(let i=0;i<r.c;i++){
+    const t=eff(r),q=clamp(Math.round(t/u),0,M);
+    P.push({name:r.c>1?`${r.n||'Set minutes'} ${i+1}`:(r.n||'Set minutes'),q,target:t,fixed:true});
+    fixedBlocks+=q;fixedMins+=t;
+  }});
+  const rem=team*M-fixedBlocks;
+  if(rp===0){if(rem!==0)return null}
+  else{
+    const base=Math.floor(rem/rp),extra=rem%rp,X=(len*team-fixedMins)/rp;
+    if(rem<0||X<0||base+(extra?1:0)>M)return null;
+    for(let i=0;i<rp;i++)P.push({name:`Player ${i+1}`,q:base+(i<extra?1:0),target:X,fixed:false});
+  }
+  // wrap-around layout: fill each pitch spot (lane) for the whole game in turn
+  let pos=0;
+  P.forEach(p=>{
+    const lane=Math.floor(pos/M),st=pos-lane*M,en=st+p.q;
+    p.segs=p.q===0?[]:(en<=M?[[st,en]]:[[st,M],[0,en-M]]);
+    pos+=p.q;
+  });
+  const on=Array.from({length:M},()=>new Set());
+  P.forEach((p,i)=>p.segs.forEach(([a,b])=>{for(let t=a;t<b;t++)on[t].add(i)}));
+  const chg=[];
+  for(let t=1;t<M;t++){
+    let n=0;on[t-1].forEach(i=>{if(!on[t].has(i))n++});
+    if(n)chg.push({min:t*u,n});
+  }
+  const dev=Math.max(0,...P.map(p=>Math.abs(p.q*u-p.target)));
+  return{u,M,P,chg,dev};
+}
+const dotc=d=>d>=-2.5?'g':(d>-5?'a':'r');
+function plans(){
+  const el=$('#plans'),{team,squad,len}=S;
+  if(team>squad){el.innerHTML='<p class="hint">Fix squad and team size to see a plan.</p>';return}
+  const res=cands().map(build).filter(Boolean);
+  if(!res.length){el.innerHTML='<p class="hint">No plan fits these numbers. See the checks below.</p>';return}
+  if(res.every(r=>!r.chg.length)){el.innerHTML='<p class="hint">No substitutions needed. Everyone plays the full game.</p>';return}
+  const minDev=Math.min(...res.map(r=>r.dev));
+  const fairest=[...res].sort((a,b)=>(Math.round(a.dev*10)-Math.round(b.dev*10))||(b.u-a.u))[0];
+  const best=res.filter(r=>r.dev<=minDev+5.1).sort((a,b)=>(Math.abs(a.u-10)-Math.abs(b.u-10))||(a.u-b.u))[0];
+  const cur=res.find(r=>r.u===chosenU)||best;
+  const seg=res.map(r=>`<button type="button" data-u="${r.u}" class="${r===cur?'on':''}">${fmt(r.u)} min<small>${r.dev<0.05?'exact':'±'+fmt(r.dev)}${r===best?' · suggested':(r===fairest?' · fairest':'')}</small></button>`).join('');
+  const oth=cur.P.filter(p=>!p.fixed),groups={};
+  oth.forEach(p=>{const m=p.q*cur.u;groups[m]=(groups[m]||0)+1});
+  const gtxt=Object.keys(groups).map(Number).sort((a,b)=>b-a).map(m=>`${groups[m]} ${groups[m]===1?'gets':'get'} ${fmt(m)}`).join(', ');
+  const flag=oth.filter(p=>p.target-p.q*cur.u>=5);
+  const list=ps=>{
+    const n=ps.map(p=>p.name),nums=n.map(x=>/^Player \d+$/.test(x)?+x.slice(7):NaN);
+    if(nums.some(isNaN))return n.join(', ');
+    const out=[];for(let i=0;i<nums.length;){let j=i;while(j+1<nums.length&&nums[j+1]===nums[j]+1)j++;out.push(j>i+1?`${nums[i]}–${nums[j]}`:nums.slice(i,j+1).join(', '));i=j+1}
+    return (nums.length>1?'Players ':'Player ')+out.join(', ');
+  };
+  let guide='';
+  if(flag.length){
+    const top=Math.max(...oth.map(p=>p.q)),tops=oth.filter(p=>p.q===top);
+    const byMin={};flag.forEach(p=>(byMin[p.q]=byMin[p.q]||[]).push(p));
+    const lines=Object.keys(byMin).map(Number).sort((a,b)=>a-b).map(q=>{const g=byMin[q],m=q*cur.u;return `<p><b>${list(g)}</b>: ${fmt(m)} min, ${fmt(g[0].target-m)} short of target (${fmt(g[0].target)}).</p>`}).join('');
+    guide=`<div class="guide">${lines}<p>Consider more time from ${fmt(len*0.75)}', in place of ${list(tops)} (${fmt(top*cur.u)} min).</p></div>`;
+  }
+  const none=cur.P.filter(p=>p.q===0&&p.target>0).length;
+  const rows=cur.P.map(p=>`<div class="rr ${p.fixed?'fx':''}"><div class="nm" title="${p.name.replace(/"/g,'&quot;')}">${p.name.replace(/</g,'&lt;')}</div><div class="tr" style="--w:${100/cur.M}%">${p.segs.map(([a,b])=>`<i style="left:${a/cur.M*100}%;width:${(b-a)/cur.M*100}%"></i>`).join('')}</div><div class="mn"><span class="dot ${dotc(p.q*cur.u-p.target)}">${fmt(p.q*cur.u)}</span></div></div>`).join('');
+  const ctext=cur.chg.length?`${cur.chg.length} change${cur.chg.length>1?'s':''}, at ${cur.chg.map(c=>`${fmt(c.min)}' (${c.n} off)`).join(', ')}`:'No changes. The same players play throughout.';
+  el.innerHTML=`<p class="hint" style="margin-bottom:8px">Pick how often you want to make changes.</p>
+    <div class="seg">${seg}</div>
+    <div class="rota">
+      <div class="rr ax"><div class="nm"></div><div class="tr"><span>0'</span><span>${fmt(len/2)}'</span><span>${fmt(len)}'</span></div><div class="mn"></div></div>
+      ${rows}
+    </div>
+    <p class="hint" style="margin:12px 0 0">White ticks mark change points. Grey bars are set-minute players. Circles: green on or above target, amber slightly behind, red 5+ min behind.</p>
+    <div class="sum">
+      ${oth.length?`<p><b>Other players:</b> ${gtxt} min.</p>`:''}
+      <p class="m">${cur.dev<0.05?'Everyone gets exactly their time.':`With ${fmt(cur.u)}-minute blocks, everyone is within ${fmt(cur.dev)} min of their target.`}</p>
+      <p>${ctext}</p>
+      ${none?`<p class="m" style="color:var(--err)">${none} player${none>1?'s':''} would not play at this block size.</p>`:''}
+    </div>
+    ${guide}
+  `;
+  el.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{chosenU=+b.dataset.u;plans()});
+}
+rows();render();
+</script>
+</body>
+</html>
